@@ -1,0 +1,491 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9522311C2F5800D000CF7D5A /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9522311B2F5800D000CF7D5A /* ColorExtension.swift */; };
+		9522311E2F5800E800CF7D5A /* NailArtModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9522311D2F5800E800CF7D5A /* NailArtModels.swift */; };
+		952231202F5800F200CF7D5A /* ResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9522311F2F5800F200CF7D5A /* ResultsViewModel.swift */; };
+		952231242F58010500CF7D5A /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952231232F58010500CF7D5A /* ResultsView.swift */; };
+		952231252F58010500CF7D5A /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952231222F58010500CF7D5A /* ImagePickerView.swift */; };
+		952231262F58010500CF7D5A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952231212F58010500CF7D5A /* HomeView.swift */; };
+		952231292F58011200CF7D5A /* NailArtAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952231282F58011200CF7D5A /* NailArtAIApp.swift */; };
+		9522312A2F58011200CF7D5A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952231272F58011200CF7D5A /* ContentView.swift */; };
+		9522312D2F5FC05100CF7D5A /* CormorantGaramond-Italic-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9522312B2F5FC05100CF7D5A /* CormorantGaramond-Italic-VariableFont_wght.ttf */; };
+		9522312E2F5FC05100CF7D5A /* CormorantGaramond-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9522312C2F5FC05100CF7D5A /* CormorantGaramond-VariableFont_wght.ttf */; };
+		952231392F5FC06000CF7D5A /* CormorantGaramond-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231302F5FC06000CF7D5A /* CormorantGaramond-BoldItalic.ttf */; };
+		9522313A2F5FC06000CF7D5A /* CormorantGaramond-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9522312F2F5FC06000CF7D5A /* CormorantGaramond-Bold.ttf */; };
+		9522313B2F5FC06000CF7D5A /* CormorantGaramond-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231312F5FC06000CF7D5A /* CormorantGaramond-Italic.ttf */; };
+		9522313C2F5FC06000CF7D5A /* CormorantGaramond-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231342F5FC06000CF7D5A /* CormorantGaramond-Medium.ttf */; };
+		9522313D2F5FC06000CF7D5A /* CormorantGaramond-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231372F5FC06000CF7D5A /* CormorantGaramond-SemiBold.ttf */; };
+		9522313E2F5FC06000CF7D5A /* CormorantGaramond-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231352F5FC06000CF7D5A /* CormorantGaramond-MediumItalic.ttf */; };
+		9522313F2F5FC06000CF7D5A /* CormorantGaramond-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231362F5FC06000CF7D5A /* CormorantGaramond-Regular.ttf */; };
+		952231402F5FC06000CF7D5A /* CormorantGaramond-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231382F5FC06000CF7D5A /* CormorantGaramond-SemiBoldItalic.ttf */; };
+		952231412F5FC06000CF7D5A /* CormorantGaramond-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231322F5FC06000CF7D5A /* CormorantGaramond-Light.ttf */; };
+		952231422F5FC06000CF7D5A /* CormorantGaramond-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231332F5FC06000CF7D5A /* CormorantGaramond-LightItalic.ttf */; };
+		95D1CCE92F76EE5B004CF4D4 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D1CCE72F76EE5B004CF4D4 /* GeminiService.swift */; };
+		95D1CCEB2F76F6D5004CF4D4 /* DesignDetailView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D1CCEA2F76F6D5004CF4D4 /* DesignDetailView 2.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		952231072F58000300CF7D5A /* NailArtAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NailArtAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9522311B2F5800D000CF7D5A /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
+		9522311D2F5800E800CF7D5A /* NailArtModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NailArtModels.swift; sourceTree = "<group>"; };
+		9522311F2F5800F200CF7D5A /* ResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsViewModel.swift; sourceTree = "<group>"; };
+		952231212F58010500CF7D5A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		952231222F58010500CF7D5A /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		952231232F58010500CF7D5A /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
+		952231272F58011200CF7D5A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		952231282F58011200CF7D5A /* NailArtAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NailArtAIApp.swift; sourceTree = "<group>"; };
+		9522312B2F5FC05100CF7D5A /* CormorantGaramond-Italic-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-Italic-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		9522312C2F5FC05100CF7D5A /* CormorantGaramond-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		9522312F2F5FC06000CF7D5A /* CormorantGaramond-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-Bold.ttf"; sourceTree = "<group>"; };
+		952231302F5FC06000CF7D5A /* CormorantGaramond-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-BoldItalic.ttf"; sourceTree = "<group>"; };
+		952231312F5FC06000CF7D5A /* CormorantGaramond-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-Italic.ttf"; sourceTree = "<group>"; };
+		952231322F5FC06000CF7D5A /* CormorantGaramond-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-Light.ttf"; sourceTree = "<group>"; };
+		952231332F5FC06000CF7D5A /* CormorantGaramond-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-LightItalic.ttf"; sourceTree = "<group>"; };
+		952231342F5FC06000CF7D5A /* CormorantGaramond-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-Medium.ttf"; sourceTree = "<group>"; };
+		952231352F5FC06000CF7D5A /* CormorantGaramond-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-MediumItalic.ttf"; sourceTree = "<group>"; };
+		952231362F5FC06000CF7D5A /* CormorantGaramond-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-Regular.ttf"; sourceTree = "<group>"; };
+		952231372F5FC06000CF7D5A /* CormorantGaramond-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-SemiBold.ttf"; sourceTree = "<group>"; };
+		952231382F5FC06000CF7D5A /* CormorantGaramond-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		952231432F5FC0F200CF7D5A /* NailArtAI-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "NailArtAI-Info.plist"; sourceTree = "<group>"; };
+		95D1CCE72F76EE5B004CF4D4 /* GeminiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
+		95D1CCEA2F76F6D5004CF4D4 /* DesignDetailView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignDetailView 2.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		952231042F58000300CF7D5A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		952230FE2F58000300CF7D5A = {
+			isa = PBXGroup;
+			children = (
+				95D1CCE82F76EE5B004CF4D4 /* Services */,
+				952231432F5FC0F200CF7D5A /* NailArtAI-Info.plist */,
+				9522311A2F5800BD00CF7D5A /* Resources */,
+				952231192F5800B500CF7D5A /* Models */,
+				952231182F5800AC00CF7D5A /* ViewModels */,
+				952231172F5800A700CF7D5A /* Views */,
+				952231162F58009F00CF7D5A /* App */,
+				952231082F58000300CF7D5A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		952231082F58000300CF7D5A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				952231072F58000300CF7D5A /* NailArtAI.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		952231162F58009F00CF7D5A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				952231272F58011200CF7D5A /* ContentView.swift */,
+				952231282F58011200CF7D5A /* NailArtAIApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		952231172F5800A700CF7D5A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				952231212F58010500CF7D5A /* HomeView.swift */,
+				952231222F58010500CF7D5A /* ImagePickerView.swift */,
+				952231232F58010500CF7D5A /* ResultsView.swift */,
+				95D1CCEA2F76F6D5004CF4D4 /* DesignDetailView 2.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		952231182F5800AC00CF7D5A /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				9522311F2F5800F200CF7D5A /* ResultsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		952231192F5800B500CF7D5A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9522311D2F5800E800CF7D5A /* NailArtModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9522311A2F5800BD00CF7D5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9522312F2F5FC06000CF7D5A /* CormorantGaramond-Bold.ttf */,
+				952231302F5FC06000CF7D5A /* CormorantGaramond-BoldItalic.ttf */,
+				952231312F5FC06000CF7D5A /* CormorantGaramond-Italic.ttf */,
+				952231322F5FC06000CF7D5A /* CormorantGaramond-Light.ttf */,
+				952231332F5FC06000CF7D5A /* CormorantGaramond-LightItalic.ttf */,
+				952231342F5FC06000CF7D5A /* CormorantGaramond-Medium.ttf */,
+				952231352F5FC06000CF7D5A /* CormorantGaramond-MediumItalic.ttf */,
+				952231362F5FC06000CF7D5A /* CormorantGaramond-Regular.ttf */,
+				952231372F5FC06000CF7D5A /* CormorantGaramond-SemiBold.ttf */,
+				952231382F5FC06000CF7D5A /* CormorantGaramond-SemiBoldItalic.ttf */,
+				9522312B2F5FC05100CF7D5A /* CormorantGaramond-Italic-VariableFont_wght.ttf */,
+				9522312C2F5FC05100CF7D5A /* CormorantGaramond-VariableFont_wght.ttf */,
+				9522311B2F5800D000CF7D5A /* ColorExtension.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		95D1CCE82F76EE5B004CF4D4 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				95D1CCE72F76EE5B004CF4D4 /* GeminiService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		952231062F58000300CF7D5A /* NailArtAI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 952231122F58000400CF7D5A /* Build configuration list for PBXNativeTarget "NailArtAI" */;
+			buildPhases = (
+				952231032F58000300CF7D5A /* Sources */,
+				952231042F58000300CF7D5A /* Frameworks */,
+				952231052F58000300CF7D5A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NailArtAI;
+			packageProductDependencies = (
+			);
+			productName = NailArtAI;
+			productReference = 952231072F58000300CF7D5A /* NailArtAI.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		952230FF2F58000300CF7D5A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					952231062F58000300CF7D5A = {
+						CreatedOnToolsVersion = 26.3;
+						LastSwiftMigration = 2630;
+					};
+				};
+			};
+			buildConfigurationList = 952231022F58000300CF7D5A /* Build configuration list for PBXProject "NailArtAI" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 952230FE2F58000300CF7D5A;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 952231082F58000300CF7D5A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				952231062F58000300CF7D5A /* NailArtAI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		952231052F58000300CF7D5A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				952231392F5FC06000CF7D5A /* CormorantGaramond-BoldItalic.ttf in Resources */,
+				9522313A2F5FC06000CF7D5A /* CormorantGaramond-Bold.ttf in Resources */,
+				9522313B2F5FC06000CF7D5A /* CormorantGaramond-Italic.ttf in Resources */,
+				9522313C2F5FC06000CF7D5A /* CormorantGaramond-Medium.ttf in Resources */,
+				9522313D2F5FC06000CF7D5A /* CormorantGaramond-SemiBold.ttf in Resources */,
+				9522313E2F5FC06000CF7D5A /* CormorantGaramond-MediumItalic.ttf in Resources */,
+				9522313F2F5FC06000CF7D5A /* CormorantGaramond-Regular.ttf in Resources */,
+				952231402F5FC06000CF7D5A /* CormorantGaramond-SemiBoldItalic.ttf in Resources */,
+				952231412F5FC06000CF7D5A /* CormorantGaramond-Light.ttf in Resources */,
+				952231422F5FC06000CF7D5A /* CormorantGaramond-LightItalic.ttf in Resources */,
+				9522312D2F5FC05100CF7D5A /* CormorantGaramond-Italic-VariableFont_wght.ttf in Resources */,
+				9522312E2F5FC05100CF7D5A /* CormorantGaramond-VariableFont_wght.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		952231032F58000300CF7D5A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				952231202F5800F200CF7D5A /* ResultsViewModel.swift in Sources */,
+				95D1CCE92F76EE5B004CF4D4 /* GeminiService.swift in Sources */,
+				9522311C2F5800D000CF7D5A /* ColorExtension.swift in Sources */,
+				952231292F58011200CF7D5A /* NailArtAIApp.swift in Sources */,
+				9522312A2F58011200CF7D5A /* ContentView.swift in Sources */,
+				952231242F58010500CF7D5A /* ResultsView.swift in Sources */,
+				952231252F58010500CF7D5A /* ImagePickerView.swift in Sources */,
+				952231262F58010500CF7D5A /* HomeView.swift in Sources */,
+				9522311E2F5800E800CF7D5A /* NailArtModels.swift in Sources */,
+				95D1CCEB2F76F6D5004CF4D4 /* DesignDetailView 2.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		952231102F58000400CF7D5A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		952231112F58000400CF7D5A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		952231132F58000400CF7D5A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "NailArtAI-Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "NailArtAI needs camera access to capture photos for nail art inspiration.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "NailArtAI needs permission to save your nail art designs to your photo library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "NailArtAI needs photo library access to let you upload inspiration photos.";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jae.NailArtAI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		952231142F58000400CF7D5A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "NailArtAI-Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "NailArtAI needs camera access to capture photos for nail art inspiration.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "NailArtAI needs permission to save your nail art designs to your photo library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "NailArtAI needs photo library access to let you upload inspiration photos.";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jae.NailArtAI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		952231022F58000300CF7D5A /* Build configuration list for PBXProject "NailArtAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				952231102F58000400CF7D5A /* Debug */,
+				952231112F58000400CF7D5A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		952231122F58000400CF7D5A /* Build configuration list for PBXNativeTarget "NailArtAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				952231132F58000400CF7D5A /* Debug */,
+				952231142F58000400CF7D5A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 952230FF2F58000300CF7D5A /* Project object */;
+}
