@@ -9,7 +9,8 @@ struct GeminiService {
 
     // MARK: - Step 1: Extract dominant colors from image
     func extractColors(_ image: UIImage) async throws -> [NailColor] {
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+        let resized = image.resizedForAPI(maxDimension: 512)
+        guard let imageData = resized.jpegData(compressionQuality: 0.7) else {
             throw GeminiError.imageEncodingFailed
         }
         let base64Image = imageData.base64EncodedString()

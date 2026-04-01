@@ -1,6 +1,17 @@
 import SwiftUI
 import UIKit
 
+extension UIImage {
+    func resizedForAPI(maxDimension: CGFloat) -> UIImage {
+        let size = self.size
+        let scale = min(maxDimension / size.width, maxDimension / size.height, 1)
+        guard scale < 1 else { return self }
+        let newSize = CGSize(width: size.width * scale, height: size.height * scale)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { _ in self.draw(in: CGRect(origin: .zero, size: newSize)) }
+    }
+}
+
 extension UIColor {
     convenience init?(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
