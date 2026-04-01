@@ -4,27 +4,23 @@ import Photos
 
 @MainActor
 class ResultsViewModel: ObservableObject {
-    @Published var suggestedColors: [NailColor] = []
     @Published var designSuggestions: [DesignSuggestion] = []
     @Published var isLoading = false
-    @Published var hasAnalyzed = false
+    @Published var hasLoaded = false
     @Published var errorMessage: String? = nil
     @Published var showSaveSuccess = false
     @Published var showPermissionError = false
 
     private let geminiService = GeminiService()
 
-    // MARK: - Analyze Image
-    func analyzeImage(_ image: UIImage) {
+    func generateDesigns(for colors: [NailColor]) {
+        guard !hasLoaded else { return }
         isLoading = true
         errorMessage = nil
-
         Task {
             do {
-                let result = try await geminiService.analyzeImage(image)
-                suggestedColors = result.colors
-                designSuggestions = result.suggestions
-                hasAnalyzed = true
+                designSuggestions = try await geminiService.generateDesigns(for: colors)
+                hasLoaded = true
             } catch {
                 errorMessage = error.localizedDescription
             }
@@ -32,7 +28,6 @@ class ResultsViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Save to Photo Library
     func saveToLibrary(image: UIImage) {
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] status in
             DispatchQueue.main.async {

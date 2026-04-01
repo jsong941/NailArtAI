@@ -112,8 +112,10 @@ struct NailPreviewCard: View {
                 ForEach(0..<5, id: \.self) { index in
                     NailView(
                         color: colors.indices.contains(index) ? colors[index].swiftUIColor : Color(hex: "F5F0E8"),
+                        secondaryColor: colors.indices.contains(index + 1) ? colors[index + 1].swiftUIColor : Color(hex: "F5F0E8"),
                         height: nailHeight(for: index),
-                        label: colors.indices.contains(index) ? colors[index].name : ""
+                        label: colors.indices.contains(index) ? colors[index].name : "",
+                        pattern: suggestion.pattern
                     )
                 }
             }
@@ -139,28 +141,58 @@ struct NailPreviewCard: View {
 // MARK: - Single Nail
 struct NailView: View {
     let color: Color
+    let secondaryColor: Color
     let height: CGFloat
     let label: String
+    let pattern: NailPattern
 
     var body: some View {
         VStack(spacing: 6) {
             ZStack {
-                // Nail body
-                NailShape()
-                    .fill(color)
+                nailFill
                     .frame(width: 36, height: height)
-                    .shadow(color: color.opacity(0.4), radius: 6, x: 0, y: 3)
+                    .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
 
                 // Shine overlay
                 NailShape()
                     .fill(
                         LinearGradient(
-                            colors: [Color.white.opacity(0.35), Color.clear],
+                            colors: [Color.white.opacity(0.3), Color.clear],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
                     .frame(width: 36, height: height)
+
+                // Glitter dots
+                if pattern == .glitter {
+                    NailShape()
+                        .fill(Color.clear)
+                        .frame(width: 36, height: height)
+                        .overlay(
+                            GeometryReader { geo in
+                                ForEach(glitterPositions, id: \.x) { pos in
+                                    Circle()
+                                        .fill(Color.white.opacity(0.7))
+                                        .frame(width: pos.size, height: pos.size)
+                                        .position(x: geo.size.width * pos.x, y: geo.size.height * pos.y)
+                                }
+                            }
+                            .clipShape(NailShape())
+                        )
+                }
+
+                // French tip overlay
+                if pattern == .french {
+                    VStack(spacing: 0) {
+                        NailShape()
+                            .fill(secondaryColor.opacity(0.85))
+                            .frame(width: 36, height: height * 0.28)
+                        Spacer()
+                    }
+                    .frame(width: 36, height: height)
+                    .clipShape(NailShape())
+                }
             }
 
             Text(label)
@@ -170,6 +202,38 @@ struct NailView: View {
                 .frame(width: 40)
         }
     }
+
+    @ViewBuilder
+    private var nailFill: some View {
+        switch pattern {
+        case .ombre:
+            NailShape()
+                .fill(
+                    LinearGradient(
+                        colors: [color, secondaryColor],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+        case .abstract:
+            NailShape()
+                .fill(
+                    LinearGradient(
+                        colors: [color, secondaryColor, color.opacity(0.6)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        default:
+            NailShape().fill(color)
+        }
+    }
+
+    private let glitterPositions: [(x: CGFloat, y: CGFloat, size: CGFloat)] = [
+        (0.2, 0.2, 3), (0.7, 0.15, 2), (0.5, 0.4, 4),
+        (0.3, 0.6, 2), (0.8, 0.5, 3), (0.15, 0.75, 2),
+        (0.6, 0.75, 3), (0.45, 0.88, 2), (0.85, 0.82, 2)
+    ]
 }
 
 // MARK: - Nail Shape

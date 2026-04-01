@@ -1,64 +1,63 @@
 import SwiftUI
 
 struct ResultsView: View {
-    let image: UIImage
-    @Environment(\.dismiss) private var dismiss
+    let selectedColors: [NailColor]
     @StateObject private var viewModel = ResultsViewModel()
     @State private var animateIn = false
 
     var body: some View {
         ZStack {
-            Color(hex: "FAFAF8")
-                .ignoresSafeArea()
+            Color(hex: "FAFAF8").ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 20) {
 
-                    // Uploaded image
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 240)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .shadow(color: Color.black.opacity(0.08), radius: 16, x: 0, y: 6)
-                        .padding(.horizontal, 24)
-                        .opacity(animateIn ? 1 : 0)
-                        .offset(y: animateIn ? 0 : 16)
-                        .animation(.easeOut(duration: 0.45).delay(0.1), value: animateIn)
+                    // Selected color palette summary
+                    HStack(spacing: 12) {
+                        ForEach(selectedColors) { color in
+                            VStack(spacing: 6) {
+                                Circle()
+                                    .fill(color.swiftUIColor)
+                                    .frame(width: 44, height: 44)
+                                    .shadow(color: color.swiftUIColor.opacity(0.35), radius: 6, x: 0, y: 3)
+                                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                                Text(color.name)
+                                    .font(.custom("CormorantGaramond-Regular", size: 11))
+                                    .foregroundColor(Color(hex: "8E8E93"))
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(18)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 3)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
+                    .opacity(animateIn ? 1 : 0)
+                    .animation(.easeOut(duration: 0.4).delay(0.05), value: animateIn)
 
-                    // Error State
+                    // Error
                     if let error = viewModel.errorMessage {
                         ErrorCard(message: error)
                             .padding(.horizontal, 24)
                             .opacity(animateIn ? 1 : 0)
-                            .animation(.easeOut(duration: 0.45).delay(0.22), value: animateIn)
+                            .animation(.easeOut(duration: 0.4).delay(0.1), value: animateIn)
                     }
 
-                    // Color Palette Section
+                    // Design Suggestions
                     if viewModel.errorMessage == nil {
-                        VStack(alignment: .leading, spacing: 12) {
-                            SectionHeader(title: "Color Palette", icon: "paintpalette.fill")
-
-                            if viewModel.isLoading {
-                                LoadingCard()
-                            } else {
-                                ColorPaletteCard(colors: viewModel.suggestedColors)
-                            }
-                        }
-                        .padding(.horizontal, 24)
-                        .opacity(animateIn ? 1 : 0)
-                        .offset(y: animateIn ? 0 : 16)
-                        .animation(.easeOut(duration: 0.45).delay(0.22), value: animateIn)
-
-                        // Design Suggestions Section
                         VStack(alignment: .leading, spacing: 12) {
                             SectionHeader(title: "Design Ideas", icon: "sparkles")
 
                             if viewModel.isLoading {
                                 LoadingCard()
+                                LoadingCard()
+                                LoadingCard()
                             } else {
                                 ForEach(viewModel.designSuggestions) { suggestion in
-                                    NavigationLink(destination: DesignDetailView(suggestion: suggestion, colors: viewModel.suggestedColors)) {
+                                    NavigationLink(destination: DesignDetailView(suggestion: suggestion, colors: selectedColors)) {
                                         DesignSuggestionCard(suggestion: suggestion)
                                     }
                                     .buttonStyle(.plain)
@@ -68,42 +67,14 @@ struct ResultsView: View {
                         .padding(.horizontal, 24)
                         .opacity(animateIn ? 1 : 0)
                         .offset(y: animateIn ? 0 : 16)
-                        .animation(.easeOut(duration: 0.45).delay(0.34), value: animateIn)
+                        .animation(.easeOut(duration: 0.45).delay(0.15), value: animateIn)
                     }
 
-                    // Save button
-                    Button {
-                        viewModel.saveToLibrary(image: image)
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "arrow.down.to.line.circle.fill")
-                                .font(.system(size: 17))
-                            Text("Save Design")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 54)
-                        .background(
-                            LinearGradient(
-                                colors: [Color(hex: "C9A84C"), Color(hex: "B8860B")],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: Color(hex: "C9A84C").opacity(0.3), radius: 12, x: 0, y: 5)
-                    }
-                    .padding(.horizontal, 24)
-                    .opacity(animateIn ? 1 : 0)
-                    .animation(.easeOut(duration: 0.45).delay(0.46), value: animateIn)
-
-                    Spacer().frame(height: 32)
+                    Spacer().frame(height: 40)
                 }
-                .padding(.top, 16)
             }
         }
-        .navigationTitle("Your Designs")
+        .navigationTitle("Design Ideas")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Saved!", isPresented: $viewModel.showSaveSuccess) {
             Button("OK", role: .cancel) {}
@@ -117,9 +88,7 @@ struct ResultsView: View {
         }
         .onAppear {
             animateIn = true
-            if !viewModel.hasAnalyzed {
-                viewModel.analyzeImage(image)
-            }
+            viewModel.generateDesigns(for: selectedColors)
         }
     }
 }
@@ -139,36 +108,6 @@ struct SectionHeader: View {
                 .font(.custom("CormorantGaramond-Bold", size: 20))
                 .foregroundColor(Color(hex: "1C1C1E"))
         }
-    }
-}
-
-struct ColorPaletteCard: View {
-    let colors: [NailColor]
-
-    var body: some View {
-        HStack(spacing: 12) {
-            ForEach(colors) { color in
-                VStack(spacing: 7) {
-                    Circle()
-                        .fill(color.swiftUIColor)
-                        .frame(width: 42, height: 42)
-                        .shadow(color: color.swiftUIColor.opacity(0.35), radius: 6, x: 0, y: 3)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white, lineWidth: 2)
-                        )
-                    Text(color.name)
-                        .font(.custom("CormorantGaramond-Regular", size: 11))
-                        .foregroundColor(Color(hex: "8E8E93"))
-                        .lineLimit(1)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(18)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 3)
     }
 }
 
@@ -243,9 +182,8 @@ struct LoadingCard: View {
             .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
             .overlay(
                 HStack(spacing: 8) {
-                    ProgressView()
-                        .tint(Color(hex: "C9A84C"))
-                    Text("Analyzing your photo...")
+                    ProgressView().tint(Color(hex: "C9A84C"))
+                    Text("Creating your designs...")
                         .font(.custom("CormorantGaramond-Italic", size: 15))
                         .foregroundColor(Color(hex: "8E8E93"))
                 }
@@ -255,4 +193,3 @@ struct LoadingCard: View {
             .onAppear { shimmer = true }
     }
 }
-

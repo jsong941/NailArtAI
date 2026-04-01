@@ -1,4 +1,19 @@
 import SwiftUI
+import UIKit
+
+extension UIColor {
+    convenience init?(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        guard Scanner(string: hex).scanHexInt64(&int), hex.count == 6 else { return nil }
+        self.init(
+            red: CGFloat(int >> 16) / 255,
+            green: CGFloat(int >> 8 & 0xFF) / 255,
+            blue: CGFloat(int & 0xFF) / 255,
+            alpha: 1
+        )
+    }
+}
 
 extension Color {
     init(hex: String) {

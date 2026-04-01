@@ -27,9 +27,11 @@
 		952231402F5FC06000CF7D5A /* CormorantGaramond-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231382F5FC06000CF7D5A /* CormorantGaramond-SemiBoldItalic.ttf */; };
 		952231412F5FC06000CF7D5A /* CormorantGaramond-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231322F5FC06000CF7D5A /* CormorantGaramond-Light.ttf */; };
 		952231422F5FC06000CF7D5A /* CormorantGaramond-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 952231332F5FC06000CF7D5A /* CormorantGaramond-LightItalic.ttf */; };
+		95BB0C322F7CE0B7005C3E58 /* ColorSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BB0C312F7CE0B7005C3E58 /* ColorSelectionViewModel.swift */; };
+		95BB0C342F7CE0D4005C3E58 /* ColorSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BB0C332F7CE0D4005C3E58 /* ColorSelectionView.swift */; };
 		95D1CCE92F76EE5B004CF4D4 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D1CCE72F76EE5B004CF4D4 /* GeminiService.swift */; };
-		95D1CCEB2F76F6D5004CF4D4 /* DesignDetailView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D1CCEA2F76F6D5004CF4D4 /* DesignDetailView 2.swift */; };
 		95D1CCED2F76FA1C004CF4D4 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D1CCEC2F76FA1C004CF4D4 /* Secrets.swift */; };
+		95D1CCEF2F7700B6004CF4D4 /* DesignDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D1CCEE2F7700B6004CF4D4 /* DesignDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,9 +57,11 @@
 		952231372F5FC06000CF7D5A /* CormorantGaramond-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-SemiBold.ttf"; sourceTree = "<group>"; };
 		952231382F5FC06000CF7D5A /* CormorantGaramond-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CormorantGaramond-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		952231432F5FC0F200CF7D5A /* NailArtAI-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "NailArtAI-Info.plist"; sourceTree = "<group>"; };
+		95BB0C312F7CE0B7005C3E58 /* ColorSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSelectionViewModel.swift; sourceTree = "<group>"; };
+		95BB0C332F7CE0D4005C3E58 /* ColorSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSelectionView.swift; sourceTree = "<group>"; };
 		95D1CCE72F76EE5B004CF4D4 /* GeminiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
-		95D1CCEA2F76F6D5004CF4D4 /* DesignDetailView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignDetailView 2.swift"; sourceTree = "<group>"; };
 		95D1CCEC2F76FA1C004CF4D4 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
+		95D1CCEE2F7700B6004CF4D4 /* DesignDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,10 +109,11 @@
 		952231172F5800A700CF7D5A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				95BB0C332F7CE0D4005C3E58 /* ColorSelectionView.swift */,
+				95D1CCEE2F7700B6004CF4D4 /* DesignDetailView.swift */,
 				952231212F58010500CF7D5A /* HomeView.swift */,
 				952231222F58010500CF7D5A /* ImagePickerView.swift */,
 				952231232F58010500CF7D5A /* ResultsView.swift */,
-				95D1CCEA2F76F6D5004CF4D4 /* DesignDetailView 2.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -116,6 +121,7 @@
 		952231182F5800AC00CF7D5A /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				95BB0C312F7CE0B7005C3E58 /* ColorSelectionViewModel.swift */,
 				9522311F2F5800F200CF7D5A /* ResultsViewModel.swift */,
 			);
 			path = ViewModels;
@@ -246,12 +252,14 @@
 				95D1CCE92F76EE5B004CF4D4 /* GeminiService.swift in Sources */,
 				9522311C2F5800D000CF7D5A /* ColorExtension.swift in Sources */,
 				952231292F58011200CF7D5A /* NailArtAIApp.swift in Sources */,
+				95D1CCEF2F7700B6004CF4D4 /* DesignDetailView.swift in Sources */,
+				95BB0C322F7CE0B7005C3E58 /* ColorSelectionViewModel.swift in Sources */,
 				9522312A2F58011200CF7D5A /* ContentView.swift in Sources */,
+				95BB0C342F7CE0D4005C3E58 /* ColorSelectionView.swift in Sources */,
 				952231242F58010500CF7D5A /* ResultsView.swift in Sources */,
 				952231252F58010500CF7D5A /* ImagePickerView.swift in Sources */,
 				952231262F58010500CF7D5A /* HomeView.swift in Sources */,
 				9522311E2F5800E800CF7D5A /* NailArtModels.swift in Sources */,
-				95D1CCEB2F76F6D5004CF4D4 /* DesignDetailView 2.swift in Sources */,
 				95D1CCED2F76FA1C004CF4D4 /* Secrets.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
