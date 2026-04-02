@@ -50,11 +50,32 @@ struct ColorSelectionView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 40)
                     } else if let error = viewModel.errorMessage {
-                        Text(error)
-                            .font(.custom("CormorantGaramond-Italic", size: 15))
-                            .foregroundColor(.red.opacity(0.7))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 24)
+                        VStack(spacing: 16) {
+                            Text(error)
+                                .font(.custom("CormorantGaramond-Italic", size: 15))
+                                .foregroundColor(Color(hex: "8E8E93"))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 24)
+                            Button {
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                viewModel.extractColors(from: image)
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "arrow.clockwise")
+                                        .font(.system(size: 13, weight: .medium))
+                                    Text("Try Again")
+                                        .font(.custom("CormorantGaramond-SemiBold", size: 16))
+                                }
+                                .foregroundColor(Color(hex: "C9A84C"))
+                                .frame(height: 44)
+                                .padding(.horizontal, 24)
+                                .background(Color(hex: "C9A84C").opacity(0.08))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "C9A84C").opacity(0.3), lineWidth: 1))
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 24)
                     } else {
                         // Color cards
                         VStack(spacing: 16) {
@@ -110,6 +131,7 @@ struct ColorSelectionView: View {
                     EmptyView()
                 }
                 Button {
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     navigateToResults = true
                 } label: {
                     HStack(spacing: 10) {
@@ -164,7 +186,10 @@ struct ColorCard: View {
     let onTap: () -> Void
 
     var body: some View {
-        Button(action: onTap) {
+        Button(action: {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            onTap()
+        }) {
             VStack(spacing: 14) {
                 HStack(spacing: 14) {
                     // Main color swatch

@@ -13,6 +13,12 @@ class ResultsViewModel: ObservableObject {
 
     private let geminiService = GeminiService()
 
+    func retryGenerateDesigns(for colors: [NailColor]) {
+        hasLoaded = false
+        errorMessage = nil
+        generateDesigns(for: colors)
+    }
+
     func generateDesigns(for colors: [NailColor]) {
         guard !hasLoaded else { return }
         isLoading = true

@@ -40,10 +40,29 @@ struct ResultsView: View {
 
                     // Error
                     if let error = viewModel.errorMessage {
-                        ErrorCard(message: error)
-                            .padding(.horizontal, 24)
-                            .opacity(animateIn ? 1 : 0)
-                            .animation(.easeOut(duration: 0.4).delay(0.1), value: animateIn)
+                        VStack(spacing: 12) {
+                            ErrorCard(message: error)
+                            Button {
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                viewModel.retryGenerateDesigns(for: selectedColors)
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "arrow.clockwise")
+                                        .font(.system(size: 13, weight: .medium))
+                                    Text("Try Again")
+                                        .font(.custom("CormorantGaramond-SemiBold", size: 16))
+                                }
+                                .foregroundColor(Color(hex: "C9A84C"))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 44)
+                                .background(Color(hex: "C9A84C").opacity(0.08))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "C9A84C").opacity(0.3), lineWidth: 1))
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                        .opacity(animateIn ? 1 : 0)
+                        .animation(.easeOut(duration: 0.4).delay(0.1), value: animateIn)
                     }
 
                     // Design Suggestions
@@ -61,6 +80,9 @@ struct ResultsView: View {
                                         DesignSuggestionCard(suggestion: suggestion)
                                     }
                                     .buttonStyle(.plain)
+                                    .simultaneousGesture(TapGesture().onEnded {
+                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                    })
                                 }
                             }
                         }
