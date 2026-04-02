@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct NailArtAIApp: App {
@@ -6,5 +7,6 @@ struct NailArtAIApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: HistorySession.self)
     }
 }

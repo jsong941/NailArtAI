@@ -1,9 +1,12 @@
 import SwiftUI
+import SwiftData
 
 struct ResultsView: View {
     let selectedColors: [NailColor]
     @StateObject private var viewModel = ResultsViewModel()
     @State private var animateIn = false
+    @State private var hasSavedToHistory = false
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         ZStack {
@@ -111,6 +114,12 @@ struct ResultsView: View {
         .onAppear {
             animateIn = true
             viewModel.generateDesigns(for: selectedColors)
+        }
+        .onChange(of: viewModel.hasLoaded) { _, loaded in
+            guard loaded, !hasSavedToHistory else { return }
+            let session = HistorySession(colors: selectedColors, designs: viewModel.designSuggestions)
+            modelContext.insert(session)
+            hasSavedToHistory = true
         }
     }
 }

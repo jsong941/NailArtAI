@@ -159,6 +159,15 @@ struct HomeView: View {
                     navigateToResults = true
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: HistoryView()) {
+                        Image(systemName: "clock.arrow.circlepath")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(Color(hex: "C9A84C"))
+                    }
+                }
+            }
             .onAppear {
                 animateIn = true
             }
