@@ -3,6 +3,7 @@ import SwiftData
 
 struct ResultsView: View {
     let selectedColors: [NailColor]
+    var selectedShape: NailShapeType = .rounded
     @StateObject private var viewModel = ResultsViewModel()
     @State private var animateIn = false
     @State private var hasSavedToHistory = false
@@ -79,7 +80,7 @@ struct ResultsView: View {
                                 LoadingCard()
                             } else {
                                 ForEach(viewModel.designSuggestions) { suggestion in
-                                    NavigationLink(destination: DesignDetailView(suggestion: suggestion, colors: selectedColors)) {
+                                    NavigationLink(destination: DesignDetailView(suggestion: suggestion, colors: selectedColors, selectedShape: selectedShape)) {
                                         DesignSuggestionCard(suggestion: suggestion)
                                     }
                                     .buttonStyle(.plain)
@@ -153,16 +154,9 @@ struct DesignSuggestionCard: View {
                 .background(Color(hex: "F5F0E8"))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(suggestion.title)
-                    .font(.custom("CormorantGaramond-SemiBold", size: 17))
-                    .foregroundColor(Color(hex: "1C1C1E"))
-                Text(suggestion.description)
-                    .font(.custom("CormorantGaramond-Italic", size: 14))
-                    .foregroundColor(Color(hex: "8E8E93"))
-                    .lineLimit(2)
-                    .lineSpacing(2)
-            }
+            Text(suggestion.title)
+                .font(.custom("CormorantGaramond-SemiBold", size: 17))
+                .foregroundColor(Color(hex: "1C1C1E"))
 
             Spacer()
 

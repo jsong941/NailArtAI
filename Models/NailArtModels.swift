@@ -26,6 +26,20 @@ enum NailPattern: String {
     case solid, ombre, french, glitter, abstract
 }
 
+// MARK: - Nail Shape Type
+enum NailShapeType: String, CaseIterable {
+    case rounded, almond, stiletto, flare
+
+    var displayName: String {
+        switch self {
+        case .rounded:  return "Round"
+        case .almond:   return "Almond"
+        case .stiletto: return "Stiletto"
+        case .flare:    return "Flare"
+        }
+    }
+}
+
 // MARK: - Design Suggestion Model
 struct DesignSuggestion: Identifiable {
     let id = UUID()

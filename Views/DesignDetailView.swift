@@ -5,6 +5,7 @@ import Photos
 struct DesignDetailView: View {
     let suggestion: DesignSuggestion
     let colors: [NailColor]
+    var selectedShape: NailShapeType = .rounded
     @State private var animateIn = false
     @State private var showSaveSuccess = false
     @State private var showPermissionError = false
@@ -25,7 +26,7 @@ struct DesignDetailView: View {
                 VStack(spacing: 28) {
 
                     // Nail preview
-                    NailPreviewCard(suggestion: suggestion, colors: colors)
+                    NailPreviewCard(suggestion: suggestion, colors: colors, selectedShape: selectedShape)
                         .padding(.horizontal, 24)
                         .padding(.top, 12)
                         .opacity(animateIn ? 1 : 0)
@@ -38,32 +39,6 @@ struct DesignDetailView: View {
                         .frame(width: 48, height: 1.5)
                         .opacity(animateIn ? 1 : 0)
                         .animation(.easeOut(duration: 0.4).delay(0.2), value: animateIn)
-
-                    // Description card
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 7) {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundColor(Color(hex: "C9A84C"))
-                            Text("Design Description")
-                                .font(.custom("CormorantGaramond-Bold", size: 20))
-                                .foregroundColor(Color(hex: "1C1C1E"))
-                        }
-                        Text(suggestion.description)
-                            .font(.custom("CormorantGaramond-Regular", size: 18))
-                            .foregroundColor(Color(hex: "3C3C3E"))
-                            .lineSpacing(6)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(20)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .shadow(color: Color.black.opacity(0.05), radius: 12, x: 0, y: 4)
-                    .padding(.horizontal, 24)
-                    .opacity(animateIn ? 1 : 0)
-                    .offset(y: animateIn ? 0 : 16)
-                    .animation(.easeOut(duration: 0.4).delay(0.25), value: animateIn)
 
                     // Tips card
                     VStack(alignment: .leading, spacing: 12) {
@@ -89,7 +64,7 @@ struct DesignDetailView: View {
                     .padding(.horizontal, 24)
                     .opacity(animateIn ? 1 : 0)
                     .offset(y: animateIn ? 0 : 16)
-                    .animation(.easeOut(duration: 0.4).delay(0.35), value: animateIn)
+                    .animation(.easeOut(duration: 0.4).delay(0.25), value: animateIn)
 
                     Spacer().frame(height: 110)
                 }
@@ -99,10 +74,7 @@ struct DesignDetailView: View {
             VStack {
                 Spacer()
                 HStack(spacing: 12) {
-                    // Save to Photos
-                    Button {
-                        saveDesign()
-                    } label: {
+                    Button { saveDesign() } label: {
                         HStack(spacing: 8) {
                             if isSaving {
                                 ProgressView().tint(.white).scaleEffect(0.8)
@@ -116,22 +88,13 @@ struct DesignDetailView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
-                        .background(
-                            LinearGradient(
-                                colors: [Color(hex: "C9A84C"), Color(hex: "B8860B")],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .background(LinearGradient(colors: [Color(hex: "C9A84C"), Color(hex: "B8860B")], startPoint: .leading, endPoint: .trailing))
                         .clipShape(RoundedRectangle(cornerRadius: 15))
                         .shadow(color: Color(hex: "C9A84C").opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                     .disabled(isSaving)
 
-                    // Share
-                    Button {
-                        shareDesign()
-                    } label: {
+                    Button { shareDesign() } label: {
                         HStack(spacing: 8) {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.system(size: 15, weight: .semibold))
@@ -149,16 +112,12 @@ struct DesignDetailView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 36)
                 .background(
-                    LinearGradient(
-                        colors: [Color(hex: "FAFAF8").opacity(0), Color(hex: "FAFAF8")],
-                        startPoint: .top, endPoint: .bottom
-                    )
-                    .frame(height: 120)
-                    .ignoresSafeArea()
+                    LinearGradient(colors: [Color(hex: "FAFAF8").opacity(0), Color(hex: "FAFAF8")], startPoint: .top, endPoint: .bottom)
+                        .frame(height: 120).ignoresSafeArea()
                 )
                 .opacity(animateIn ? 1 : 0)
                 .offset(y: animateIn ? 0 : 20)
-                .animation(.easeOut(duration: 0.4).delay(0.45), value: animateIn)
+                .animation(.easeOut(duration: 0.4).delay(0.35), value: animateIn)
             }
         }
         .navigationTitle(suggestion.title)
@@ -204,11 +163,10 @@ struct DesignDetailView: View {
     private func saveDesign() {
         isSaving = true
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        let card = DesignShareCard(suggestion: suggestion, colors: colors)
+        let card = DesignShareCard(suggestion: suggestion, colors: colors, shapeType: selectedShape)
         let renderer = ImageRenderer(content: card)
         renderer.scale = 3.0
         guard let image = renderer.uiImage else { isSaving = false; return }
-
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             DispatchQueue.main.async {
                 isSaving = false
@@ -227,11 +185,10 @@ struct DesignDetailView: View {
     // MARK: - Share
     private func shareDesign() {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        let card = DesignShareCard(suggestion: suggestion, colors: colors)
+        let card = DesignShareCard(suggestion: suggestion, colors: colors, shapeType: selectedShape)
         let renderer = ImageRenderer(content: card)
         renderer.scale = 3.0
         guard let image = renderer.uiImage else { return }
-
         let vc = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -240,9 +197,11 @@ struct DesignDetailView: View {
 }
 
 // MARK: - Nail Preview Card
+
 struct NailPreviewCard: View {
     let suggestion: DesignSuggestion
     let colors: [NailColor]
+    let selectedShape: NailShapeType
 
     var body: some View {
         VStack(spacing: 16) {
@@ -256,15 +215,15 @@ struct NailPreviewCard: View {
                 Spacer()
             }
 
-            // 5 nails in a hand-like arrangement
             HStack(alignment: .bottom, spacing: 10) {
                 ForEach(0..<5, id: \.self) { index in
                     NailView(
-                        color: colors.indices.contains(index) ? colors[index].swiftUIColor : Color(hex: "F5F0E8"),
-                        secondaryColor: colors.indices.contains(index + 1) ? colors[index + 1].swiftUIColor : Color(hex: "F5F0E8"),
+                        color: colors[index % colors.count].swiftUIColor,
+                        secondaryColor: colors[(index + 1) % colors.count].swiftUIColor,
                         height: nailHeight(for: index),
-                        label: colors.indices.contains(index) ? colors[index].name : "",
-                        pattern: suggestion.pattern
+                        label: colors[index % colors.count].name,
+                        pattern: suggestion.pattern,
+                        shapeType: selectedShape
                     )
                 }
             }
@@ -280,20 +239,20 @@ struct NailPreviewCard: View {
         .shadow(color: Color.black.opacity(0.05), radius: 12, x: 0, y: 4)
     }
 
-    // Mimic natural finger height variation (ring finger tallest)
     private func nailHeight(for index: Int) -> CGFloat {
-        let heights: [CGFloat] = [62, 70, 74, 72, 58]
-        return heights[index]
+        [62, 70, 74, 72, 58][index]
     }
 }
 
 // MARK: - Single Nail
+
 struct NailView: View {
     let color: Color
     let secondaryColor: Color
     let height: CGFloat
     let label: String
     let pattern: NailPattern
+    let shapeType: NailShapeType
 
     var body: some View {
         VStack(spacing: 6) {
@@ -302,20 +261,12 @@ struct NailView: View {
                     .frame(width: 36, height: height)
                     .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
 
-                // Shine overlay
-                NailShape()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.white.opacity(0.3), Color.clear],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                NailShape(shapeType: shapeType)
+                    .fill(LinearGradient(colors: [Color.white.opacity(0.3), Color.clear], startPoint: .topLeading, endPoint: .bottomTrailing))
                     .frame(width: 36, height: height)
 
-                // Glitter dots
                 if pattern == .glitter {
-                    NailShape()
+                    NailShape(shapeType: shapeType)
                         .fill(Color.clear)
                         .frame(width: 36, height: height)
                         .overlay(
@@ -327,20 +278,19 @@ struct NailView: View {
                                         .position(x: geo.size.width * pos.x, y: geo.size.height * pos.y)
                                 }
                             }
-                            .clipShape(NailShape())
+                            .clipShape(NailShape(shapeType: shapeType))
                         )
                 }
 
-                // French tip overlay
                 if pattern == .french {
                     VStack(spacing: 0) {
-                        NailShape()
+                        NailShape(shapeType: shapeType)
                             .fill(secondaryColor.opacity(0.85))
                             .frame(width: 36, height: height * 0.28)
                         Spacer()
                     }
                     .frame(width: 36, height: height)
-                    .clipShape(NailShape())
+                    .clipShape(NailShape(shapeType: shapeType))
                 }
             }
 
@@ -356,25 +306,13 @@ struct NailView: View {
     private var nailFill: some View {
         switch pattern {
         case .ombre:
-            NailShape()
-                .fill(
-                    LinearGradient(
-                        colors: [color, secondaryColor],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
+            NailShape(shapeType: shapeType)
+                .fill(LinearGradient(colors: [color, secondaryColor], startPoint: .top, endPoint: .bottom))
         case .abstract:
-            NailShape()
-                .fill(
-                    LinearGradient(
-                        colors: [color, secondaryColor, color.opacity(0.6)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+            NailShape(shapeType: shapeType)
+                .fill(LinearGradient(colors: [color, secondaryColor, color.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing))
         default:
-            NailShape().fill(color)
+            NailShape(shapeType: shapeType).fill(color)
         }
     }
 
@@ -386,46 +324,80 @@ struct NailView: View {
 }
 
 // MARK: - Nail Shape
+
 struct NailShape: Shape {
+    var shapeType: NailShapeType = .rounded
+
     func path(in rect: CGRect) -> Path {
-        var path = Path()
         let w = rect.width
         let h = rect.height
-        let r = w / 2
+        let cx = w / 2
+        var path = Path()
 
-        // Rounded top, straight sides, flat bottom
-        path.move(to: CGPoint(x: 0, y: r))
-        path.addArc(
-            center: CGPoint(x: r, y: r),
-            radius: r,
-            startAngle: .degrees(180),
-            endAngle: .degrees(0),
-            clockwise: false
-        )
-        path.addLine(to: CGPoint(x: w, y: h))
-        path.addLine(to: CGPoint(x: 0, y: h))
-        path.closeSubpath()
+        switch shapeType {
+
+        case .rounded:
+            let r = cx
+            path.move(to: CGPoint(x: 0, y: r))
+            path.addArc(center: CGPoint(x: cx, y: r), radius: r,
+                        startAngle: .degrees(180), endAngle: .degrees(0), clockwise: false)
+            path.addLine(to: CGPoint(x: w, y: h))
+            path.addLine(to: CGPoint(x: 0, y: h))
+            path.closeSubpath()
+
+        case .almond:
+            path.move(to: CGPoint(x: 0, y: h))
+            path.addCurve(to: CGPoint(x: cx, y: h * 0.04),
+                          control1: CGPoint(x: 0, y: h * 0.35),
+                          control2: CGPoint(x: cx * 0.2, y: h * 0.04))
+            path.addCurve(to: CGPoint(x: w, y: h),
+                          control1: CGPoint(x: cx * 1.8, y: h * 0.04),
+                          control2: CGPoint(x: w, y: h * 0.35))
+            path.closeSubpath()
+
+        case .stiletto:
+            path.move(to: CGPoint(x: 0, y: h))
+            path.addCurve(to: CGPoint(x: cx, y: 0),
+                          control1: CGPoint(x: 0, y: h * 0.55),
+                          control2: CGPoint(x: cx * 0.35, y: h * 0.05))
+            path.addCurve(to: CGPoint(x: w, y: h),
+                          control1: CGPoint(x: cx * 1.65, y: h * 0.05),
+                          control2: CGPoint(x: w, y: h * 0.55))
+            path.closeSubpath()
+
+        case .flare:
+            let inset = w * 0.18
+            path.move(to: CGPoint(x: inset, y: h))
+            path.addLine(to: CGPoint(x: 0, y: h * 0.25))
+            path.addQuadCurve(to: CGPoint(x: w, y: h * 0.25),
+                              control: CGPoint(x: cx, y: -h * 0.08))
+            path.addLine(to: CGPoint(x: w - inset, y: h))
+            path.closeSubpath()
+        }
+
         return path
     }
 }
 
-// MARK: - Share Card (rendered to image for Save/Share)
+// MARK: - Share Card
+
 struct DesignShareCard: View {
     let suggestion: DesignSuggestion
     let colors: [NailColor]
+    var shapeType: NailShapeType = .rounded
 
     var body: some View {
         VStack(spacing: 0) {
-            // Nail preview
             VStack(spacing: 16) {
                 HStack(alignment: .bottom, spacing: 10) {
                     ForEach(0..<5, id: \.self) { index in
                         NailView(
-                            color: colors.indices.contains(index) ? colors[index].swiftUIColor : Color(hex: "F5F0E8"),
-                            secondaryColor: colors.indices.contains(index + 1) ? colors[index + 1].swiftUIColor : Color(hex: "F5F0E8"),
+                            color: colors[index % colors.count].swiftUIColor,
+                            secondaryColor: colors[(index + 1) % colors.count].swiftUIColor,
                             height: [62, 70, 74, 72, 58][index],
                             label: "",
-                            pattern: suggestion.pattern
+                            pattern: suggestion.pattern,
+                            shapeType: shapeType
                         )
                     }
                 }
@@ -434,23 +406,14 @@ struct DesignShareCard: View {
                 Text(suggestion.emoji + " " + suggestion.title)
                     .font(.custom("CormorantGaramond-Bold", size: 22))
                     .foregroundColor(Color(hex: "1C1C1E"))
-
-                Text(suggestion.description)
-                    .font(.custom("CormorantGaramond-Italic", size: 15))
-                    .foregroundColor(Color(hex: "8E8E93"))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-                    .padding(.horizontal, 8)
             }
             .padding(24)
             .frame(maxWidth: .infinity)
 
-            // Divider
             Rectangle()
                 .fill(Color(hex: "C9A84C").opacity(0.3))
                 .frame(height: 1)
 
-            // Branding footer
             HStack(spacing: 6) {
                 Image(systemName: "sparkles")
                     .font(.system(size: 11, weight: .semibold))
@@ -469,6 +432,7 @@ struct DesignShareCard: View {
 }
 
 // MARK: - Tip Row
+
 struct TipRow: View {
     let text: String
 

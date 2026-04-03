@@ -5,6 +5,7 @@ struct ColorSelectionView: View {
     @StateObject private var viewModel = ColorSelectionViewModel()
     @State private var navigateToResults = false
     @State private var animateIn = false
+    @State private var selectedShape: NailShapeType = .rounded
 
     var body: some View {
         ZStack {
@@ -120,16 +121,55 @@ struct ColorSelectionView: View {
                         .animation(.spring(response: 0.4, dampingFraction: 0.75), value: viewModel.visibleCount)
                     }
 
-                    Spacer().frame(height: 100)
+                    Spacer().frame(height: 190)
                 }
             }
 
-            // Generate button pinned to bottom
+            // Shape + Generate pinned to bottom
             VStack {
                 Spacer()
-                NavigationLink(destination: ResultsView(selectedColors: viewModel.selectedColors), isActive: $navigateToResults) {
-                    EmptyView()
+
+                // Nail shape picker
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "oval.portrait")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(Color(hex: "C9A84C"))
+                        Text("Nail Shape")
+                            .font(.custom("CormorantGaramond-SemiBold", size: 15))
+                            .foregroundColor(Color(hex: "1C1C1E"))
+                    }
+                    HStack(spacing: 10) {
+                        ForEach(NailShapeType.allCases, id: \.self) { shape in
+                            Button {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                    selectedShape = shape
+                                }
+                            } label: {
+                                VStack(spacing: 6) {
+                                    NailShape(shapeType: shape)
+                                        .fill(selectedShape == shape ? Color(hex: "C9A84C") : Color(hex: "D1D1D6"))
+                                        .frame(width: 26, height: 40)
+                                    Text(shape.displayName)
+                                        .font(.system(size: 10, weight: .medium))
+                                        .foregroundColor(selectedShape == shape ? Color(hex: "C9A84C") : Color(hex: "8E8E93"))
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(selectedShape == shape ? Color(hex: "C9A84C").opacity(0.08) : Color.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(selectedShape == shape ? Color(hex: "C9A84C").opacity(0.5) : Color(hex: "E5E5EA"), lineWidth: 1.5)
+                                )
+                            }
+                        }
+                    }
                 }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 14)
+
                 Button {
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     navigateToResults = true
@@ -163,6 +203,9 @@ struct ColorSelectionView: View {
                     .ignoresSafeArea()
                 )
             }
+        }
+        .navigationDestination(isPresented: $navigateToResults) {
+            ResultsView(selectedColors: viewModel.selectedColors, selectedShape: selectedShape)
         }
         .navigationTitle("Color Palette")
         .navigationBarTitleDisplayMode(.inline)
