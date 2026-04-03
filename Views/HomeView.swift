@@ -161,10 +161,17 @@ struct HomeView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: HistoryView()) {
-                        Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(hex: "C9A84C"))
+                    HStack(spacing: 18) {
+                        NavigationLink(destination: FavoritesView()) {
+                            Image(systemName: "heart")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(hex: "C9A84C"))
+                        }
+                        NavigationLink(destination: HistoryView()) {
+                            Image(systemName: "clock.arrow.circlepath")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(hex: "C9A84C"))
+                        }
                     }
                 }
             }

@@ -7,6 +7,6 @@ struct NailArtAIApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: HistorySession.self)
+        .modelContainer(for: [HistorySession.self, FavoriteDesign.self])
     }
 }

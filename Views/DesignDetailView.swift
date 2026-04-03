@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import Photos
 
 struct DesignDetailView: View {
@@ -8,6 +9,12 @@ struct DesignDetailView: View {
     @State private var showSaveSuccess = false
     @State private var showPermissionError = false
     @State private var isSaving = false
+    @Environment(\.modelContext) private var modelContext
+    @Query private var favorites: [FavoriteDesign]
+
+    private var isFavorited: Bool {
+        favorites.contains { $0.title == suggestion.title }
+    }
 
     var body: some View {
         ZStack {
@@ -156,6 +163,15 @@ struct DesignDetailView: View {
         }
         .navigationTitle(suggestion.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: toggleFavorite) {
+                    Image(systemName: isFavorited ? "heart.fill" : "heart")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(Color(hex: "C9A84C"))
+                }
+            }
+        }
         .onAppear { animateIn = true }
         .alert("Saved!", isPresented: $showSaveSuccess) {
             Button("OK", role: .cancel) {}
@@ -171,6 +187,16 @@ struct DesignDetailView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Please allow photo library access in Settings to save designs.")
+        }
+    }
+
+    // MARK: - Favorite
+    private func toggleFavorite() {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        if let existing = favorites.first(where: { $0.title == suggestion.title }) {
+            modelContext.delete(existing)
+        } else {
+            modelContext.insert(FavoriteDesign(suggestion: suggestion, colors: colors))
         }
     }
 

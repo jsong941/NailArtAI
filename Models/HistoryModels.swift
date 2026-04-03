@@ -26,7 +26,41 @@ struct StoredDesign: Codable {
     }
 }
 
-// MARK: - SwiftData Model
+// MARK: - SwiftData Models
+
+@Model
+class FavoriteDesign {
+    var savedAt: Date
+    var emoji: String
+    var title: String
+    var designDescription: String
+    var patternRaw: String
+    var colorsData: Data
+
+    init(suggestion: DesignSuggestion, colors: [NailColor]) {
+        savedAt = .now
+        emoji = suggestion.emoji
+        title = suggestion.title
+        designDescription = suggestion.description
+        patternRaw = suggestion.pattern.rawValue
+        let stored = colors.map { StoredColor(name: $0.name, hex: $0.hex) }
+        colorsData = (try? JSONEncoder().encode(stored)) ?? Data()
+    }
+
+    var colors: [NailColor] {
+        let stored = (try? JSONDecoder().decode([StoredColor].self, from: colorsData)) ?? []
+        return stored.map { $0.asNailColor }
+    }
+
+    var asDesignSuggestion: DesignSuggestion {
+        DesignSuggestion(
+            emoji: emoji,
+            title: title,
+            description: designDescription,
+            pattern: NailPattern(rawValue: patternRaw) ?? .solid
+        )
+    }
+}
 
 @Model
 class HistorySession {
