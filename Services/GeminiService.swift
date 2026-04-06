@@ -107,6 +107,52 @@ struct GeminiService {
         return suggestions
     }
 
+    // MARK: - Step 3: Regenerate a single design (for refinement flow)
+    func regenerateSingleDesign(for colors: [NailColor]) async throws -> DesignSuggestion {
+        let colorList = colors.enumerated().map { i, c in
+            "Color \(i + 1): \(c.name) (#\(c.hex))"
+        }.joined(separator: "\n")
+
+        let prompt = """
+        You are a professional nail art designer. Create 1 creative nail art design using these colors:
+        \(colorList)
+
+        Return ONLY valid JSON (no markdown, no code blocks) in exactly this format:
+        {
+          "suggestions": [
+            {"emoji": "🎨", "title": "Design Name", "description": "Vivid description.", "pattern": "ombre"}
+          ]
+        }
+
+        Rules:
+        - Return exactly 1 design
+        - Use 1 or 2 of the provided colors
+        - Description must be specific to the actual colors given
+        - pattern must be one of: solid, ombre, french, glitter, abstract
+        - Return ONLY the JSON object, nothing else
+        """
+
+        let requestBody: [String: Any] = [
+            "contents": [[
+                "parts": [["text": prompt]]
+            ]]
+        ]
+
+        let data = try await makeRequest(body: requestBody)
+        let text = try extractText(from: data)
+        let json = try parseJSON(text)
+
+        let suggestionsArray = json["suggestions"] as? [[String: String]] ?? []
+        guard let dict = suggestionsArray.first,
+              let emoji = dict["emoji"],
+              let title = dict["title"],
+              let description = dict["description"] else {
+            throw GeminiError.parseError
+        }
+        let pattern = NailPattern(rawValue: dict["pattern"] ?? "") ?? .solid
+        return DesignSuggestion(emoji: emoji, title: title, description: description, pattern: pattern)
+    }
+
     // MARK: - Shared Helpers
     private func makeRequest(body: [String: Any]) async throws -> Data {
         let url = URL(string: "\(baseURL)/\(model):generateContent?key=\(apiKey)")!

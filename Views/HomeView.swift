@@ -10,138 +10,108 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "FAFAF8")
+                Color(hex: "FCFAF8")
                     .ignoresSafeArea()
 
                 VStack(spacing: 0) {
 
                     Spacer()
 
-                    // Header
-                    VStack(spacing: 8) {
-                        Text("NailArtAI")
-                            .font(.custom("CormorantGaramond-Bold", size: 42))
-                            .foregroundColor(Color(hex: "1C1C1E"))
-                            .opacity(animateIn ? 1 : 0)
-                            .offset(y: animateIn ? 0 : 16)
-                            .animation(.easeOut(duration: 0.45).delay(0.1), value: animateIn)
-
-                        Text("Your personal nail art designer")
-                            .font(.custom("CormorantGaramond-Italic", size: 16))
-                            .foregroundColor(Color(hex: "8E8E93"))
-                            .opacity(animateIn ? 1 : 0)
-                            .offset(y: animateIn ? 0 : 10)
-                            .animation(.easeOut(duration: 0.45).delay(0.18), value: animateIn)
-                    }
-                    .padding(.bottom, 48)
-
-                    // Color dots
-                    HStack(spacing: 10) {
-                        ForEach(["E8C5A0", "D4A853", "C9A84C", "B8956A", "F0E0C0"], id: \.self) { hex in
+                    // Hero content
+                    VStack(spacing: 20) {
+                        // Sparkle icon
+                        ZStack {
                             Circle()
-                                .fill(Color(hex: hex))
-                                .frame(width: 24, height: 24)
-                                .shadow(color: Color(hex: hex).opacity(0.4), radius: 4, x: 0, y: 2)
+                                .fill(Color(hex: "F3EFEA"))
+                                .frame(width: 64, height: 64)
+                            Image(systemName: "sparkle")
+                                .font(.system(size: 26, weight: .light))
+                                .foregroundColor(Color(hex: "C9A84C"))
                         }
-                    }
-                    .opacity(animateIn ? 1 : 0)
-                    .animation(.easeOut(duration: 0.45).delay(0.25), value: animateIn)
-                    .padding(.bottom, 32)
+                        .opacity(animateIn ? 1 : 0)
+                        .scaleEffect(animateIn ? 1 : 0.85)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.7).delay(0.1), value: animateIn)
 
-                    // Tagline
-                    VStack(spacing: 6) {
-                        Text("Snap. Inspire. Design.")
-                            .font(.custom("CormorantGaramond-SemiBold", size: 20))
-                            .foregroundColor(Color(hex: "1C1C1E"))
+                        // Headline
+                        Text("Discover your\nsignature style.")
+                            .font(.custom("CormorantGaramond-Medium", size: 38))
+                            .foregroundColor(Color(hex: "2C2925"))
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                            .opacity(animateIn ? 1 : 0)
+                            .offset(y: animateIn ? 0 : 12)
+                            .animation(.easeOut(duration: 0.45).delay(0.18), value: animateIn)
 
+                        // Subtext
                         Text("Point your camera at any color, artwork,\nor object to get curated nail designs.")
-                            .font(.custom("CormorantGaramond-Italic", size: 15))
-                            .foregroundColor(Color(hex: "8E8E93"))
+                            .font(.custom("CormorantGaramond-Italic", size: 16))
+                            .foregroundColor(Color(hex: "8E8A83"))
                             .multilineTextAlignment(.center)
                             .lineSpacing(3)
-                    }
-                    .opacity(animateIn ? 1 : 0)
-                    .offset(y: animateIn ? 0 : 12)
-                    .animation(.easeOut(duration: 0.45).delay(0.3), value: animateIn)
-
-                    // Step indicators
-                    HStack(spacing: 0) {
-                        ForEach(steps, id: \.title) { step in
-                            VStack(spacing: 6) {
-                                Image(systemName: step.icon)
-                                    .font(.system(size: 16, weight: .light))
-                                    .foregroundColor(Color(hex: "C9A84C"))
-                                Text(step.title)
-                                    .font(.system(size: 11, weight: .medium))
-                                    .foregroundColor(Color(hex: "8E8E93"))
-                            }
-                            .frame(maxWidth: .infinity)
-
-                            if step.title != steps.last?.title {
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .foregroundColor(Color(hex: "C9A84C").opacity(0.4))
-                            }
-                        }
+                            .opacity(animateIn ? 1 : 0)
+                            .offset(y: animateIn ? 0 : 8)
+                            .animation(.easeOut(duration: 0.45).delay(0.24), value: animateIn)
                     }
                     .padding(.horizontal, 32)
-                    .padding(.top, 36)
-                    .opacity(animateIn ? 1 : 0)
-                    .animation(.easeOut(duration: 0.45).delay(0.35), value: animateIn)
 
                     Spacer()
 
-                    // Buttons
-                    VStack(spacing: 12) {
+                    // Action buttons
+                    VStack(spacing: 10) {
+                        Text("Begin Analysis")
+                            .font(.system(size: 10, weight: .medium))
+                            .tracking(2)
+                            .foregroundColor(Color(hex: "8E8A83"))
+                            .opacity(animateIn ? 1 : 0)
+                            .animation(.easeOut(duration: 0.4).delay(0.32), value: animateIn)
+
                         Button {
                             showCamera = true
                         } label: {
                             HStack(spacing: 10) {
-                                Image(systemName: "camera.fill")
-                                    .font(.system(size: 15, weight: .semibold))
-                                Text("Take a Photo")
-                                    .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                Image(systemName: "camera")
+                                    .font(.system(size: 17, weight: .light))
+                                Text("Use Camera")
+                                    .font(.custom("CormorantGaramond-SemiBold", size: 19))
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 54)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color(hex: "C9A84C"), Color(hex: "B8860B")],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .shadow(color: Color(hex: "C9A84C").opacity(0.3), radius: 10, x: 0, y: 4)
+                            .frame(height: 64)
+                            .background(Color(hex: "C9A84C"))
+                            .clipShape(RoundedRectangle(cornerRadius: 22))
+                            .shadow(color: Color(hex: "C9A84C").opacity(0.28), radius: 14, x: 0, y: 6)
                         }
+                        .opacity(animateIn ? 1 : 0)
+                        .offset(y: animateIn ? 0 : 18)
+                        .animation(.easeOut(duration: 0.45).delay(0.36), value: animateIn)
 
                         Button {
                             showImagePicker = true
                         } label: {
                             HStack(spacing: 10) {
-                                Image(systemName: "photo.on.rectangle.angled")
-                                    .font(.system(size: 15, weight: .medium))
-                                Text("Upload from Library")
-                                    .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                Image(systemName: "photo")
+                                    .font(.system(size: 17, weight: .light))
+                                    .foregroundColor(Color(hex: "8E8A83"))
+                                Text("Choose Photo")
+                                    .font(.custom("CormorantGaramond-SemiBold", size: 19))
+                                    .foregroundColor(Color(hex: "2C2925"))
                             }
-                            .foregroundColor(Color(hex: "1C1C1E"))
                             .frame(maxWidth: .infinity)
-                            .frame(height: 54)
+                            .frame(height: 64)
                             .background(Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .clipShape(RoundedRectangle(cornerRadius: 22))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Color(hex: "E5E5EA"), lineWidth: 1.5)
+                                RoundedRectangle(cornerRadius: 22)
+                                    .stroke(Color.black.opacity(0.06), lineWidth: 1)
                             )
                         }
+                        .opacity(animateIn ? 1 : 0)
+                        .offset(y: animateIn ? 0 : 18)
+                        .animation(.easeOut(duration: 0.45).delay(0.42), value: animateIn)
                     }
                     .padding(.horizontal, 24)
-                    .opacity(animateIn ? 1 : 0)
-                    .offset(y: animateIn ? 0 : 20)
-                    .animation(.easeOut(duration: 0.5).delay(0.4), value: animateIn)
 
-                    Spacer().frame(height: 48)
+                    Spacer().frame(height: 52)
                 }
             }
             .navigationDestination(isPresented: $navigateToResults) {
@@ -160,17 +130,22 @@ struct HomeView: View {
                 }
             }
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("NailArtAI")
+                        .font(.custom("CormorantGaramond-SemiBold", size: 20))
+                        .foregroundColor(Color(hex: "2C2925"))
+                }
                 ToolbarItem(placement: .topBarTrailing) {
-                    HStack(spacing: 18) {
+                    HStack(spacing: 16) {
                         NavigationLink(destination: FavoritesView()) {
                             Image(systemName: "heart")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(Color(hex: "C9A84C"))
+                                .font(.system(size: 16, weight: .light))
+                                .foregroundColor(Color(hex: "2C2925"))
                         }
                         NavigationLink(destination: HistoryView()) {
-                            Image(systemName: "clock.arrow.circlepath")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(Color(hex: "C9A84C"))
+                            Image(systemName: "clock")
+                                .font(.system(size: 16, weight: .light))
+                                .foregroundColor(Color(hex: "2C2925"))
                         }
                     }
                 }
@@ -180,12 +155,6 @@ struct HomeView: View {
             }
         }
     }
-
-    let steps: [(icon: String, title: String)] = [
-        (icon: "camera", title: "Capture"),
-        (icon: "sparkles", title: "Analyze"),
-        (icon: "paintpalette", title: "Design")
-    ]
 }
 
 #Preview {
