@@ -68,52 +68,20 @@ struct DesignDetailView: View {
                         .animation(.easeOut(duration: 0.4).delay(0.15), value: animateIn)
 
                     // Design title + description
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 10) {
                         Text(activeSuggestion.title)
-                            .font(.custom("CormorantGaramond-SemiBold", size: 26))
+                            .font(.custom("CormorantGaramond-SemiBold", size: 32))
                             .foregroundColor(Color(hex: "2C2925"))
                         Text(activeSuggestion.description)
-                            .font(.custom("CormorantGaramond-Italic", size: 16))
+                            .font(.custom("CormorantGaramond-Italic", size: 19))
                             .foregroundColor(Color(hex: "8E8A83"))
-                            .lineSpacing(3)
+                            .lineSpacing(4)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 24)
                     .opacity(animateIn ? 1 : 0)
                     .offset(y: animateIn ? 0 : 10)
                     .animation(.easeOut(duration: 0.4).delay(0.2), value: animateIn)
-
-                    // Compact tip card
-                    HStack(alignment: .top, spacing: 14) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 34, height: 34)
-                                .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 2)
-                            Image(systemName: "lightbulb")
-                                .font(.system(size: 14, weight: .light))
-                                .foregroundColor(Color(hex: "C9A84C"))
-                        }
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Pro Tip")
-                                .font(.system(size: 12, weight: .semibold))
-                                .tracking(0.5)
-                                .foregroundColor(Color(hex: "2C2925"))
-                            Text("Apply a base coat, use thin layers, and finish with a glossy top coat to protect your design.")
-                                .font(.custom("CormorantGaramond-Italic", size: 15))
-                                .foregroundColor(Color(hex: "8E8A83"))
-                                .lineSpacing(3)
-                        }
-                    }
-                    .padding(18)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(hex: "F3EFEA"))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.black.opacity(0.03), lineWidth: 1))
-                    .padding(.horizontal, 20)
-                    .opacity(animateIn ? 1 : 0)
-                    .offset(y: animateIn ? 0 : 16)
-                    .animation(.easeOut(duration: 0.4).delay(0.28), value: animateIn)
 
                     Spacer().frame(height: 110)
                 }
@@ -340,13 +308,13 @@ struct NailPreviewCard: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            HStack(spacing: 7) {
+            HStack(spacing: 8) {
                 Image(systemName: "hand.raised.fill")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 15, weight: .light))
                     .foregroundColor(Color(hex: "C9A84C"))
                 Text("Nail Preview")
-                    .font(.custom("CormorantGaramond-Bold", size: 20))
-                    .foregroundColor(Color(hex: "1C1C1E"))
+                    .font(.custom("CormorantGaramond-Bold", size: 24))
+                    .foregroundColor(Color(hex: "2C2925"))
                 Spacer()
             }
 
@@ -371,10 +339,10 @@ struct NailPreviewCard: View {
                         Button {
                             onTapColor?(index)
                         } label: {
-                            VStack(spacing: 4) {
+                            VStack(spacing: 5) {
                                 Circle()
                                     .fill(color.swiftUIColor)
-                                    .frame(width: 30, height: 30)
+                                    .frame(width: 38, height: 38)
                                     .overlay(
                                         Circle().stroke(
                                             index == 0 ? Color(hex: "C9A84C") : Color(hex: "E5E5EA"),
@@ -383,23 +351,20 @@ struct NailPreviewCard: View {
                                     )
                                     .shadow(color: color.swiftUIColor.opacity(0.3), radius: 4, x: 0, y: 2)
                                 Text(index == 0 ? "Primary" : "Secondary")
-                                    .font(.custom("CormorantGaramond-Regular", size: 9))
-                                    .foregroundColor(index == 0 ? Color(hex: "C9A84C") : Color(hex: "8E8E93"))
+                                    .font(.custom("CormorantGaramond-Regular", size: 12))
+                                    .foregroundColor(index == 0 ? Color(hex: "C9A84C") : Color(hex: "8E8A83"))
                             }
                         }
                         .buttonStyle(.plain)
                     }
                     Spacer()
                     Text("Tap to swap")
-                        .font(.custom("CormorantGaramond-Italic", size: 11))
+                        .font(.custom("CormorantGaramond-Italic", size: 13))
                         .foregroundColor(Color(hex: "C9A84C").opacity(0.7))
                 }
                 .padding(.top, 2)
             }
 
-            Text(suggestion.title)
-                .font(.custom("CormorantGaramond-Italic", size: 14))
-                .foregroundColor(Color(hex: "8E8E93"))
         }
         .padding(20)
         .background(Color.white)
@@ -408,7 +373,7 @@ struct NailPreviewCard: View {
     }
 
     private func nailHeight(for index: Int) -> CGFloat {
-        [62, 70, 74, 72, 58][index]
+        [88, 100, 106, 102, 82][index]
     }
 }
 
@@ -426,17 +391,17 @@ struct NailView: View {
         VStack(spacing: 6) {
             ZStack {
                 nailFill
-                    .frame(width: 36, height: height)
-                    .shadow(color: color.opacity(0.35), radius: 6, x: 0, y: 3)
+                    .frame(width: 52, height: height)
+                    .shadow(color: color.opacity(0.35), radius: 8, x: 0, y: 4)
 
                 NailShape(shapeType: shapeType)
                     .fill(LinearGradient(colors: [Color.white.opacity(0.3), Color.clear], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: 36, height: height)
+                    .frame(width: 52, height: height)
 
                 if pattern == .glitter {
                     NailShape(shapeType: shapeType)
                         .fill(Color.clear)
-                        .frame(width: 36, height: height)
+                        .frame(width: 52, height: height)
                         .overlay(
                             GeometryReader { geo in
                                 ForEach(glitterPositions, id: \.x) { pos in
@@ -454,19 +419,19 @@ struct NailView: View {
                     VStack(spacing: 0) {
                         NailShape(shapeType: shapeType)
                             .fill(secondaryColor.opacity(0.85))
-                            .frame(width: 36, height: height * 0.28)
+                            .frame(width: 52, height: height * 0.28)
                         Spacer()
                     }
-                    .frame(width: 36, height: height)
+                    .frame(width: 52, height: height)
                     .clipShape(NailShape(shapeType: shapeType))
                 }
             }
 
             Text(label)
-                .font(.custom("CormorantGaramond-Regular", size: 9))
-                .foregroundColor(Color(hex: "8E8E93"))
+                .font(.custom("CormorantGaramond-Regular", size: 11))
+                .foregroundColor(Color(hex: "8E8A83"))
                 .lineLimit(1)
-                .frame(width: 40)
+                .frame(width: 56)
         }
     }
 
@@ -562,7 +527,7 @@ struct DesignShareCard: View {
                         NailView(
                             color: colors[index % colors.count].swiftUIColor,
                             secondaryColor: colors[(index + 1) % colors.count].swiftUIColor,
-                            height: [62, 70, 74, 72, 58][index],
+                            height: [88, 100, 106, 102, 82][index],
                             label: "",
                             pattern: suggestion.pattern,
                             shapeType: shapeType
