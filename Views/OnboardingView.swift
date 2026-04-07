@@ -4,21 +4,21 @@ struct OnboardingView: View {
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
     @State private var currentPage = 0
 
-    private let pages: [(icon: String, title: String, description: String)] = [
-        (
+    private let pages: [OnboardingPage] = [
+        OnboardingPage(
             icon: "camera.fill",
-            title: "Capture Any Color",
-            description: "Snap a photo or upload from your library — a sunset, a painting, a fabric swatch. Anything that inspires you."
+            title: "Any Photo,\nAnywhere",
+            description: "Snap a photo or pick one from your library — a sunset, outfit, painting, or anything that catches your eye."
         ),
-        (
-            icon: "sparkles",
-            title: "AI Reads Your Colors",
-            description: "Gemini AI extracts the dominant colors and builds a beautiful shade palette just from your image."
+        OnboardingPage(
+            icon: "bag.fill",
+            title: "Shop Your\nExact Colors",
+            description: "Doing your nails yourself? AI matches your photo's colors to real nail polishes on Amazon so you can buy exactly what you need."
         ),
-        (
-            icon: "paintpalette.fill",
-            title: "Designs Made for You",
-            description: "Pick your favorite shades and get four unique nail art designs tailored to your exact palette."
+        OnboardingPage(
+            icon: "wand.and.sparkles",
+            title: "Generate AI\nNail Art",
+            description: "Seeing a professional? Get AI-generated nail art inspired by your photo to show your nail tech exactly what you're envisioning."
         )
     ]
 
@@ -27,6 +27,24 @@ struct OnboardingView: View {
             Color(hex: "FAFAF8").ignoresSafeArea()
 
             VStack(spacing: 0) {
+                // Skip button
+                HStack {
+                    Spacer()
+                    if currentPage < pages.count - 1 {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.35)) { hasSeenOnboarding = true }
+                        } label: {
+                            Text("Skip")
+                                .font(.custom("CormorantGaramond-Italic", size: 16))
+                                .foregroundColor(Color(hex: "8E8A83"))
+                                .padding(.horizontal, 24)
+                                .padding(.top, 16)
+                        }
+                    } else {
+                        Color.clear.frame(height: 48)
+                    }
+                }
+
                 TabView(selection: $currentPage) {
                     ForEach(pages.indices, id: \.self) { i in
                         OnboardingPageView(page: pages[i])
@@ -78,23 +96,31 @@ struct OnboardingView: View {
     }
 }
 
+// MARK: - Page Model
+
+struct OnboardingPage {
+    let icon: String
+    let title: String
+    let description: String
+}
+
 // MARK: - Single Onboarding Page
+
 struct OnboardingPageView: View {
-    let page: (icon: String, title: String, description: String)
+    let page: OnboardingPage
     @State private var animateIn = false
 
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
 
-            // Icon
             ZStack {
-                Circle()
-                    .fill(Color(hex: "C9A84C").opacity(0.1))
-                    .frame(width: 130, height: 130)
                 Circle()
                     .fill(Color(hex: "C9A84C").opacity(0.06))
                     .frame(width: 170, height: 170)
+                Circle()
+                    .fill(Color(hex: "C9A84C").opacity(0.1))
+                    .frame(width: 130, height: 130)
                 Image(systemName: page.icon)
                     .font(.system(size: 52, weight: .light))
                     .foregroundColor(Color(hex: "C9A84C"))
@@ -104,12 +130,12 @@ struct OnboardingPageView: View {
             .animation(.spring(response: 0.55, dampingFraction: 0.68).delay(0.05), value: animateIn)
             .padding(.bottom, 44)
 
-            // Text
             VStack(spacing: 14) {
                 Text(page.title)
-                    .font(.custom("CormorantGaramond-Bold", size: 32))
+                    .font(.custom("CormorantGaramond-Bold", size: 34))
                     .foregroundColor(Color(hex: "1C1C1E"))
                     .multilineTextAlignment(.center)
+                    .lineSpacing(2)
 
                 Text(page.description)
                     .font(.custom("CormorantGaramond-Italic", size: 17))
@@ -128,8 +154,4 @@ struct OnboardingPageView: View {
         .onAppear { animateIn = true }
         .onDisappear { animateIn = false }
     }
-}
-
-#Preview {
-    OnboardingView()
 }

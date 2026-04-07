@@ -5,6 +5,7 @@ struct HomeView: View {
     @State private var showCamera = false
     @State private var selectedImage: UIImage?
     @State private var navigateToResults = false
+    @State private var showHelp = false
     @State private var animateIn = false
 
     var body: some View {
@@ -129,11 +130,23 @@ struct HomeView: View {
                     navigateToResults = true
                 }
             }
+            .sheet(isPresented: $showHelp) {
+                HelpView()
+            }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("NailArtAI")
                         .font(.custom("CormorantGaramond-SemiBold", size: 20))
                         .foregroundColor(Color(hex: "2C2925"))
+                }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showHelp = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                            .font(.system(size: 16, weight: .light))
+                            .foregroundColor(Color(hex: "2C2925"))
+                    }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 16) {
