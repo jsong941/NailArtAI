@@ -3,16 +3,18 @@ import SwiftUI
 struct ColorSelectionView: View {
     let image: UIImage
     @StateObject private var viewModel = ColorSelectionViewModel()
-    @State private var navigateToResults = false
+    @State private var showIntentSheet = false
+    @State private var navigateToShop = false
+    @State private var navigateToGenerate = false
     @State private var animateIn = false
     @State private var selectedShape: NailShapeType = .rounded
 
     var body: some View {
         ZStack {
-            Color(hex: "FAFAF8").ignoresSafeArea()
+            Color(hex: "FCFAF8").ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 28) {
 
                     // Photo
                     Image(uiImage: image)
@@ -26,277 +28,254 @@ struct ColorSelectionView: View {
                         .opacity(animateIn ? 1 : 0)
                         .animation(.easeOut(duration: 0.4).delay(0.05), value: animateIn)
 
-                    // Header
-                    VStack(spacing: 4) {
-                        Text("Choose Your Colors")
-                            .font(.custom("CormorantGaramond-Bold", size: 26))
-                            .foregroundColor(Color(hex: "1C1C1E"))
-                        Text("Select 1 or 2 colors to base your designs on")
-                            .font(.custom("CormorantGaramond-Italic", size: 15))
-                            .foregroundColor(Color(hex: "8E8E93"))
+                    // Color palette
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack(spacing: 7) {
+                            Image(systemName: "eyedropper")
+                                .font(.system(size: 13, weight: .light))
+                                .foregroundColor(Color(hex: "C9A84C"))
+                            Text("Color Palette")
+                                .font(.custom("CormorantGaramond-Bold", size: 20))
+                                .foregroundColor(Color(hex: "2C2925"))
+                        }
+
+                        if viewModel.isLoading {
+                            HStack(spacing: 12) {
+                                ProgressView().tint(Color(hex: "C9A84C"))
+                                Text("Extracting colors...")
+                                    .font(.custom("CormorantGaramond-Italic", size: 15))
+                                    .foregroundColor(Color(hex: "8E8A83"))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 12)
+                        } else if let error = viewModel.errorMessage {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(error)
+                                    .font(.custom("CormorantGaramond-Italic", size: 14))
+                                    .foregroundColor(Color(hex: "8E8A83"))
+                                Button {
+                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                    viewModel.extractColors(from: image)
+                                } label: {
+                                    Text("Try Again")
+                                        .font(.custom("CormorantGaramond-SemiBold", size: 15))
+                                        .foregroundColor(Color(hex: "C9A84C"))
+                                }
+                            }
+                        } else {
+                            HStack(alignment: .top, spacing: 14) {
+                                ForEach(viewModel.allColors) { color in
+                                    VStack(spacing: 6) {
+                                        Circle()
+                                            .fill(color.swiftUIColor)
+                                            .frame(width: 44, height: 44)
+                                            .shadow(color: color.swiftUIColor.opacity(0.3), radius: 5, x: 0, y: 2)
+                                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                                        Text(color.name)
+                                            .font(.custom("CormorantGaramond-Regular", size: 10))
+                                            .foregroundColor(Color(hex: "8E8A83"))
+                                            .lineLimit(2)
+                                            .multilineTextAlignment(.center)
+                                            .minimumScaleFactor(0.8)
+                                            .frame(width: 52)
+                                    }
+                                }
+                                Spacer()
+                            }
+                        }
                     }
+                    .padding(.horizontal, 24)
                     .opacity(animateIn ? 1 : 0)
                     .animation(.easeOut(duration: 0.4).delay(0.12), value: animateIn)
 
-                    // Loading state
-                    if viewModel.isLoading {
-                        VStack(spacing: 12) {
-                            ProgressView()
-                                .tint(Color(hex: "C9A84C"))
-                                .scaleEffect(1.2)
-                            Text("Extracting colors...")
-                                .font(.custom("CormorantGaramond-Italic", size: 15))
-                                .foregroundColor(Color(hex: "8E8E93"))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 40)
-                    } else if let error = viewModel.errorMessage {
-                        VStack(spacing: 16) {
-                            Text(error)
-                                .font(.custom("CormorantGaramond-Italic", size: 15))
-                                .foregroundColor(Color(hex: "8E8E93"))
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 24)
-                            Button {
-                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                viewModel.extractColors(from: image)
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "arrow.clockwise")
-                                        .font(.system(size: 13, weight: .medium))
-                                    Text("Try Again")
-                                        .font(.custom("CormorantGaramond-SemiBold", size: 16))
-                                }
-                                .foregroundColor(Color(hex: "C9A84C"))
-                                .frame(height: 44)
-                                .padding(.horizontal, 24)
-                                .background(Color(hex: "C9A84C").opacity(0.08))
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "C9A84C").opacity(0.3), lineWidth: 1))
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 24)
-                    } else {
-                        // Color cards
-                        VStack(spacing: 16) {
-                            ForEach(viewModel.visibleColors) { color in
-                                ColorCard(
-                                    color: color,
-                                    isSelected: viewModel.selectedIDs.contains(color.id),
-                                    selectionIndex: selectionIndex(for: color)
-                                ) {
-                                    viewModel.toggle(color)
-                                }
-                                .transition(.opacity.combined(with: .move(edge: .bottom)))
-                            }
-
-                            // Add more button
-                            if viewModel.canShowMore {
-                                Button {
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                                        viewModel.showNextColor()
-                                    }
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "plus.circle")
-                                            .font(.system(size: 15, weight: .medium))
-                                        Text("Show next color")
-                                            .font(.custom("CormorantGaramond-SemiBold", size: 16))
-                                    }
-                                    .foregroundColor(Color(hex: "C9A84C"))
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 48)
-                                    .background(Color(hex: "C9A84C").opacity(0.08))
-                                    .clipShape(RoundedRectangle(cornerRadius: 14))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 14)
-                                            .stroke(Color(hex: "C9A84C").opacity(0.3), lineWidth: 1)
-                                    )
-                                }
-                                .padding(.horizontal, 24)
-                            }
-                        }
-                        .padding(.horizontal, 24)
-                        .animation(.spring(response: 0.4, dampingFraction: 0.75), value: viewModel.visibleCount)
-                    }
-
-                    Spacer().frame(height: 190)
+                    Spacer().frame(height: 180)
                 }
             }
 
-            // Shape + Generate pinned to bottom
+            // Nail shape + Generate pinned to bottom
             VStack {
                 Spacer()
 
-                // Nail shape picker
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "oval.portrait")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(Color(hex: "C9A84C"))
-                        Text("Nail Shape")
-                            .font(.custom("CormorantGaramond-SemiBold", size: 15))
-                            .foregroundColor(Color(hex: "1C1C1E"))
-                    }
-                    HStack(spacing: 10) {
-                        ForEach(NailShapeType.allCases, id: \.self) { shape in
-                            Button {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                    selectedShape = shape
+                VStack(spacing: 14) {
+                    // Nail shape picker
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "oval.portrait")
+                                .font(.system(size: 12, weight: .light))
+                                .foregroundColor(Color(hex: "C9A84C"))
+                            Text("Nail Shape")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 15))
+                                .foregroundColor(Color(hex: "2C2925"))
+                        }
+                        HStack(spacing: 10) {
+                            ForEach(NailShapeType.allCases, id: \.self) { shape in
+                                Button {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                        selectedShape = shape
+                                    }
+                                } label: {
+                                    VStack(spacing: 6) {
+                                        NailShape(shapeType: shape)
+                                            .fill(selectedShape == shape ? Color(hex: "C9A84C") : Color(hex: "D1D1D6"))
+                                            .frame(width: 26, height: 40)
+                                        Text(shape.displayName)
+                                            .font(.system(size: 10, weight: .medium))
+                                            .foregroundColor(selectedShape == shape ? Color(hex: "C9A84C") : Color(hex: "8E8E93"))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(selectedShape == shape ? Color(hex: "C9A84C").opacity(0.08) : Color.white)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(selectedShape == shape ? Color(hex: "C9A84C").opacity(0.5) : Color(hex: "E5E5EA"), lineWidth: 1.5)
+                                    )
                                 }
-                            } label: {
-                                VStack(spacing: 6) {
-                                    NailShape(shapeType: shape)
-                                        .fill(selectedShape == shape ? Color(hex: "C9A84C") : Color(hex: "D1D1D6"))
-                                        .frame(width: 26, height: 40)
-                                    Text(shape.displayName)
-                                        .font(.system(size: 10, weight: .medium))
-                                        .foregroundColor(selectedShape == shape ? Color(hex: "C9A84C") : Color(hex: "8E8E93"))
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 10)
-                                .background(selectedShape == shape ? Color(hex: "C9A84C").opacity(0.08) : Color.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(selectedShape == shape ? Color(hex: "C9A84C").opacity(0.5) : Color(hex: "E5E5EA"), lineWidth: 1.5)
-                                )
                             }
                         }
                     }
-                }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 14)
+                    .padding(.horizontal, 24)
 
-                Button {
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    navigateToResults = true
-                } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 15, weight: .semibold))
-                        Text(viewModel.selectedIDs.isEmpty ? "Select a color to continue" : "Generate Designs")
-                            .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                    // Generate button
+                    Button {
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        showIntentSheet = true
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "wand.and.sparkles")
+                                .font(.system(size: 15, weight: .light))
+                            Text(viewModel.isLoading ? "Analyzing Photo..." : "Generate Design")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 58)
+                        .background(viewModel.canGenerate ? Color(hex: "2C2925") : Color(hex: "2C2925").opacity(0.4))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-                    .background(
-                        viewModel.canGenerateDesigns
-                            ? LinearGradient(colors: [Color(hex: "C9A84C"), Color(hex: "B8860B")], startPoint: .leading, endPoint: .trailing)
-                            : LinearGradient(colors: [Color(hex: "C9A84C").opacity(0.4), Color(hex: "B8860B").opacity(0.4)], startPoint: .leading, endPoint: .trailing)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .shadow(color: Color(hex: "C9A84C").opacity(viewModel.canGenerateDesigns ? 0.3 : 0), radius: 10, x: 0, y: 4)
+                    .disabled(!viewModel.canGenerate)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 36)
                 }
-                .disabled(!viewModel.canGenerateDesigns)
-                .padding(.horizontal, 24)
-                .padding(.bottom, 36)
                 .background(
                     LinearGradient(
-                        colors: [Color(hex: "FAFAF8").opacity(0), Color(hex: "FAFAF8")],
+                        colors: [Color(hex: "FCFAF8").opacity(0), Color(hex: "FCFAF8")],
                         startPoint: .top, endPoint: .bottom
                     )
-                    .frame(height: 120)
-                    .ignoresSafeArea()
+                    .frame(height: 200).ignoresSafeArea()
                 )
             }
         }
-        .navigationDestination(isPresented: $navigateToResults) {
-            ResultsView(selectedColors: viewModel.selectedColors, selectedShape: selectedShape)
+        .navigationDestination(isPresented: $navigateToShop) {
+            DesignDetailView(colors: viewModel.allColors, selectedShape: selectedShape, sourceImage: image)
         }
-        .navigationTitle("Color Palette")
+        .navigationDestination(isPresented: $navigateToGenerate) {
+            GenerateDesignView(colors: viewModel.allColors, selectedShape: selectedShape, sourceImage: image)
+        }
+        .sheet(isPresented: $showIntentSheet) {
+            NailIntentSheet(
+                onSelf: {
+                    showIntentSheet = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        navigateToShop = true
+                    }
+                },
+                onPro: {
+                    showIntentSheet = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        navigateToGenerate = true
+                    }
+                }
+            )
+            .presentationDetents([.height(320)])
+            .presentationCornerRadius(28)
+        }
+        .navigationTitle("Your Photo")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             animateIn = true
             viewModel.extractColors(from: image)
         }
     }
-
-    private func selectionIndex(for color: NailColor) -> Int? {
-        let selected = viewModel.selectedColors
-        return selected.firstIndex(where: { $0.id == color.id }).map { $0 + 1 }
-    }
 }
 
-// MARK: - Color Card
-struct ColorCard: View {
-    let color: NailColor
-    let isSelected: Bool
-    let selectionIndex: Int?
-    let onTap: () -> Void
+// MARK: - Intent Sheet
+
+struct NailIntentSheet: View {
+    let onSelf: () -> Void
+    let onPro: () -> Void
 
     var body: some View {
-        Button(action: {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            onTap()
-        }) {
-            VStack(spacing: 14) {
-                HStack(spacing: 14) {
-                    // Main color swatch
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(color.swiftUIColor)
-                        .frame(width: 52, height: 52)
-                        .shadow(color: color.swiftUIColor.opacity(0.4), radius: 6, x: 0, y: 3)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white, lineWidth: isSelected ? 2.5 : 0)
-                        )
+        VStack(spacing: 16) {
+            // Handle
+            Capsule()
+                .fill(Color(hex: "D1D1D6"))
+                .frame(width: 36, height: 4)
+                .padding(.top, 12)
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(color.name)
-                            .font(.custom("CormorantGaramond-SemiBold", size: 17))
-                            .foregroundColor(Color(hex: "1C1C1E"))
-                        Text("#\(color.hex.uppercased())")
-                            .font(.system(size: 12, weight: .medium, design: .monospaced))
-                            .foregroundColor(Color(hex: "8E8E93"))
-                    }
+            Text("How are you getting your nails done?")
+                .font(.custom("CormorantGaramond-SemiBold", size: 22))
+                .foregroundColor(Color(hex: "2C2925"))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+                .padding(.top, 4)
 
-                    Spacer()
-
-                    // Selection indicator
-                    ZStack {
-                        Circle()
-                            .fill(isSelected ? Color(hex: "C9A84C") : Color(hex: "E5E5EA"))
-                            .frame(width: 28, height: 28)
-                        if isSelected, let index = selectionIndex {
-                            Text("\(index)")
-                                .font(.system(size: 13, weight: .bold))
-                                .foregroundColor(.white)
+            VStack(spacing: 12) {
+                // Myself
+                Button(action: onSelf) {
+                    HStack(spacing: 16) {
+                        Text("💅")
+                            .font(.system(size: 28))
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Doing it myself")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                .foregroundColor(Color(hex: "2C2925"))
+                            Text("Shop matching polishes on Amazon")
+                                .font(.custom("CormorantGaramond-Italic", size: 13))
+                                .foregroundColor(Color(hex: "8E8A83"))
                         }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(Color(hex: "C9A84C"))
                     }
+                    .padding(16)
+                    .background(Color(hex: "F9F7F4"))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color(hex: "E8E4DF"), lineWidth: 1))
                 }
+                .buttonStyle(.plain)
 
-                // Color series: lighter → base → deeper
-                HStack(spacing: 8) {
-                    ForEach(Array(zip(["Lighter", "Base", "Deeper"], color.series)), id: \.0) { label, seriesColor in
-                        VStack(spacing: 5) {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(seriesColor)
-                                .frame(height: 32)
-                                .shadow(color: seriesColor.opacity(0.3), radius: 3, x: 0, y: 1)
-                            Text(label)
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(Color(hex: "8E8E93"))
+                // Professional
+                Button(action: onPro) {
+                    HStack(spacing: 16) {
+                        Text("✨")
+                            .font(.system(size: 28))
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Going to a professional")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                .foregroundColor(Color(hex: "2C2925"))
+                            Text("Generate AI nail art to show your tech")
+                                .font(.custom("CormorantGaramond-Italic", size: 13))
+                                .foregroundColor(Color(hex: "8E8A83"))
                         }
-                        .frame(maxWidth: .infinity)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(Color(hex: "C9A84C"))
                     }
+                    .padding(16)
+                    .background(Color(hex: "F9F7F4"))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color(hex: "E8E4DF"), lineWidth: 1))
                 }
+                .buttonStyle(.plain)
             }
-            .padding(16)
-            .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 18))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(
-                        isSelected ? Color(hex: "C9A84C") : Color.clear,
-                        lineWidth: 2
-                    )
-            )
-            .shadow(color: isSelected ? Color(hex: "C9A84C").opacity(0.15) : Color.black.opacity(0.05), radius: 10, x: 0, y: 3)
+            .padding(.horizontal, 20)
+
+            Spacer()
         }
-        .buttonStyle(.plain)
+        .background(Color(hex: "FCFAF8"))
     }
 }

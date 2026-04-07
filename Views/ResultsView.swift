@@ -4,6 +4,7 @@ import SwiftData
 struct ResultsView: View {
     let selectedColors: [NailColor]
     var selectedShape: NailShapeType = .rounded
+    var sourceImage: UIImage? = nil
     @StateObject private var viewModel = ResultsViewModel()
     @State private var animateIn = false
     @State private var hasSavedToHistory = false
@@ -80,7 +81,7 @@ struct ResultsView: View {
                                 LoadingCard()
                             } else {
                                 ForEach(viewModel.designSuggestions) { suggestion in
-                                    NavigationLink(destination: DesignDetailView(suggestion: suggestion, colors: selectedColors, selectedShape: selectedShape)) {
+                                    NavigationLink(destination: DesignDetailView(suggestion: suggestion, colors: selectedColors, selectedShape: selectedShape, sourceImage: sourceImage)) {
                                         DesignSuggestionCard(suggestion: suggestion)
                                     }
                                     .buttonStyle(.plain)

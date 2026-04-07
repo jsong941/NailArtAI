@@ -107,7 +107,86 @@ struct GeminiService {
         return suggestions
     }
 
-    // MARK: - Step 3: Regenerate a single design (for refinement flow)
+    // MARK: - Step 3: Generate photo-inspired nail art image (two-step)
+    func generatePhotoInspiredImage(from image: UIImage, colors: [NailColor], shape: NailShapeType = .rounded, emphasizedColors: [NailColor] = [], addOn: DesignAddOn? = nil) async throws -> UIImage {
+        // Step A: use gemini-2.5-flash to describe the pattern from the photo
+        let resized = image.resizedForAPI(maxDimension: 512)
+        guard let imageData = resized.jpegData(compressionQuality: 0.7) else {
+            throw GeminiError.imageEncodingFailed
+        }
+        let base64Image = imageData.base64EncodedString()
+        let colorList = colors.map { "\($0.name) (#\($0.hex))" }.joined(separator: ", ")
+        let emphasisNote = emphasizedColors.isEmpty ? "" : " Especially emphasize: \(emphasizedColors.map { $0.name }.joined(separator: ", "))."
+        let shapeNote = "The nails should have a \(shape.displayName.lowercased()) shape."
+        let addOnNote = addOn.map { " \($0.promptNote)" } ?? ""
+
+        let descriptionPrompt = """
+        Analyze this image and describe in vivid detail what the pattern, texture, and visual style looks like — for example: plaid with navy and white stripes, floral with pink petals on cream, marble with grey veining, etc.
+        Then write a single detailed image generation prompt (2–3 sentences) describing how to create a close-up photorealistic nail art photo inspired by this pattern using these colors: \(colorList).\(emphasisNote) \(shapeNote)\(addOnNote)
+        Return only the image generation prompt text, nothing else.
+        """
+
+        let descriptionBody: [String: Any] = [
+            "contents": [[
+                "parts": [
+                    ["inline_data": ["mime_type": "image/jpeg", "data": base64Image]],
+                    ["text": descriptionPrompt]
+                ]
+            ]]
+        ]
+
+        let descData = try await makeRequest(body: descriptionBody)
+        let imageGenPrompt = try extractText(from: descData)
+        print("[PhotoInspired] Generated prompt: \(imageGenPrompt)")
+
+        // Step B: send that prompt to the image generation model
+        let imageGenModel = "gemini-2.5-flash-image"
+        let imageGenBody: [String: Any] = [
+            "contents": [[
+                "parts": [["text": imageGenPrompt]]
+            ]],
+            "generationConfig": [
+                "responseModalities": ["IMAGE", "TEXT"]
+            ]
+        ]
+
+        let url = URL(string: "\(baseURL)/\(imageGenModel):generateContent?key=\(apiKey)")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: imageGenBody)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            let body = String(data: data, encoding: .utf8) ?? "no body"
+            print("[PhotoInspired] Image gen error \((response as? HTTPURLResponse)?.statusCode ?? -1): \(body)")
+            throw GeminiError.apiError
+        }
+
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let candidates = json["candidates"] as? [[String: Any]],
+              let first = candidates.first,
+              let content = first["content"] as? [String: Any],
+              let parts = content["parts"] as? [[String: Any]] else {
+            print("[PhotoInspired] Parse error — full response: \(String(data: data, encoding: .utf8) ?? "n/a")")
+            throw GeminiError.parseError
+        }
+
+        for part in parts {
+            let inlineData = part["inlineData"] as? [String: Any] ?? part["inline_data"] as? [String: Any]
+            if let inlineData,
+               let base64String = inlineData["data"] as? String,
+               let imgData = Data(base64Encoded: base64String),
+               let uiImage = UIImage(data: imgData) {
+                return uiImage
+            }
+        }
+
+        print("[PhotoInspired] No image part found in response: \(String(data: data, encoding: .utf8) ?? "n/a")")
+        throw GeminiError.parseError
+    }
+
+    // MARK: - Step 4: Regenerate a single design (for refinement flow)
     func regenerateSingleDesign(for colors: [NailColor]) async throws -> DesignSuggestion {
         let colorList = colors.enumerated().map { i, c in
             "Color \(i + 1): \(c.name) (#\(c.hex))"
