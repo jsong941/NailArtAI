@@ -68,11 +68,11 @@ struct HelpView: View {
                             .padding(.top, 12)
 
                             Text("How It Works")
-                                .font(.custom("CormorantGaramond-Bold", size: 28))
+                                .font(.custom("CormorantGaramond-Bold", size: 34))
                                 .foregroundColor(Color(hex: "2C2925"))
 
                             Text("Follow these steps to get your perfect nail look.")
-                                .font(.custom("CormorantGaramond-Italic", size: 15))
+                                .font(.custom("CormorantGaramond-Italic", size: 18))
                                 .foregroundColor(Color(hex: "8E8A83"))
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 32)
@@ -94,7 +94,7 @@ struct HelpView: View {
                                     .font(.system(size: 13, weight: .light))
                                     .foregroundColor(Color(hex: "C9A84C"))
                                 Text("Tips for Best Results")
-                                    .font(.custom("CormorantGaramond-Bold", size: 18))
+                                    .font(.custom("CormorantGaramond-Bold", size: 22))
                                     .foregroundColor(Color(hex: "2C2925"))
                             }
                             VStack(alignment: .leading, spacing: 8) {
@@ -178,7 +178,7 @@ struct HelpStepRow: View {
                             .foregroundColor(Color(hex: "8E8A83"))
                             .frame(width: 18)
                         Text(step.title)
-                            .font(.custom("CormorantGaramond-SemiBold", size: 17))
+                            .font(.custom("CormorantGaramond-SemiBold", size: 20))
                             .foregroundColor(Color(hex: "2C2925"))
                         Spacer()
                         Image(systemName: expanded ? "chevron.up" : "chevron.down")
@@ -190,7 +190,7 @@ struct HelpStepRow: View {
 
                 if expanded {
                     Text(step.detail)
-                        .font(.custom("CormorantGaramond-Italic", size: 15))
+                        .font(.custom("CormorantGaramond-Italic", size: 17))
                         .foregroundColor(Color(hex: "6B6760"))
                         .lineSpacing(4)
                         .fixedSize(horizontal: false, vertical: true)
@@ -215,7 +215,7 @@ struct TipRow: View {
                 .frame(width: 5, height: 5)
                 .padding(.top, 7)
             Text(text)
-                .font(.custom("CormorantGaramond-Regular", size: 14))
+                .font(.custom("CormorantGaramond-Regular", size: 16))
                 .foregroundColor(Color(hex: "6B6760"))
                 .lineSpacing(3)
                 .fixedSize(horizontal: false, vertical: true)
