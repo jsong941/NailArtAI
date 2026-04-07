@@ -527,7 +527,7 @@ struct ShopThisLookCard: View {
                     .foregroundColor(Color(hex: "8E8A83"))
             }
 
-            Text("Closest matching polishes for your colors.")
+            Text("Closest matching polishes for your colors. Availability may vary.")
                 .font(.custom("CormorantGaramond-Italic", size: 14))
                 .foregroundColor(Color(hex: "8E8A83"))
 
