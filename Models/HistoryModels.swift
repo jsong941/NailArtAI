@@ -36,8 +36,9 @@ class FavoriteDesign {
     var designDescription: String
     var patternRaw: String
     var colorsData: Data
+    var generatedImageData: Data?
 
-    init(suggestion: DesignSuggestion, colors: [NailColor]) {
+    init(suggestion: DesignSuggestion, colors: [NailColor], generatedImageData: Data? = nil) {
         savedAt = .now
         emoji = suggestion.emoji
         title = suggestion.title
@@ -45,6 +46,12 @@ class FavoriteDesign {
         patternRaw = suggestion.pattern.rawValue
         let stored = colors.map { StoredColor(name: $0.name, hex: $0.hex) }
         colorsData = (try? JSONEncoder().encode(stored)) ?? Data()
+        self.generatedImageData = generatedImageData
+    }
+
+    var generatedImage: UIImage? {
+        guard let data = generatedImageData else { return nil }
+        return UIImage(data: data)
     }
 
     var colors: [NailColor] {

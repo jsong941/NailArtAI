@@ -12,6 +12,7 @@ class ColorSelectionViewModel: ObservableObject {
     var canGenerate: Bool { !allColors.isEmpty && !isLoading }
 
     func extractColors(from image: UIImage) {
+        guard allColors.isEmpty else { return }
         isLoading = true
         errorMessage = nil
         Task {
@@ -22,5 +23,10 @@ class ColorSelectionViewModel: ObservableObject {
             }
             isLoading = false
         }
+    }
+
+    func resetColors() {
+        allColors = []
+        errorMessage = nil
     }
 }

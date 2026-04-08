@@ -232,7 +232,7 @@ struct NailIntentSheet: View {
                                 .font(.custom("CormorantGaramond-SemiBold", size: 18))
                                 .foregroundColor(Color(hex: "2C2925"))
                             Text("Shop matching polishes on Amazon")
-                                .font(.custom("CormorantGaramond-Italic", size: 13))
+                                .font(.custom("CormorantGaramond-Italic", size: 15))
                                 .foregroundColor(Color(hex: "8E8A83"))
                         }
                         Spacer()
@@ -257,7 +257,7 @@ struct NailIntentSheet: View {
                                 .font(.custom("CormorantGaramond-SemiBold", size: 18))
                                 .foregroundColor(Color(hex: "2C2925"))
                             Text("Generate AI nail art to show your tech")
-                                .font(.custom("CormorantGaramond-Italic", size: 13))
+                                .font(.custom("CormorantGaramond-Italic", size: 15))
                                 .foregroundColor(Color(hex: "8E8A83"))
                         }
                         Spacer()

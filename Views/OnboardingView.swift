@@ -132,13 +132,13 @@ struct OnboardingPageView: View {
 
             VStack(spacing: 14) {
                 Text(page.title)
-                    .font(.custom("CormorantGaramond-Bold", size: 34))
+                    .font(.custom("CormorantGaramond-Bold", size: 40))
                     .foregroundColor(Color(hex: "1C1C1E"))
                     .multilineTextAlignment(.center)
                     .lineSpacing(2)
 
                 Text(page.description)
-                    .font(.custom("CormorantGaramond-Italic", size: 17))
+                    .font(.custom("CormorantGaramond-Italic", size: 20))
                     .foregroundColor(Color(hex: "8E8E93"))
                     .multilineTextAlignment(.center)
                     .lineSpacing(5)

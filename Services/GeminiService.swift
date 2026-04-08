@@ -108,7 +108,7 @@ struct GeminiService {
     }
 
     // MARK: - Step 3: Generate photo-inspired nail art image (two-step)
-    func generatePhotoInspiredImage(from image: UIImage, colors: [NailColor], shape: NailShapeType = .rounded, emphasizedColors: [NailColor] = [], addOn: DesignAddOn? = nil) async throws -> UIImage {
+    func generatePhotoInspiredImage(from image: UIImage, colors: [NailColor], shape: NailShapeType = .rounded, emphasizedColors: [NailColor] = [], addOnNote: String? = nil) async throws -> UIImage {
         // Step A: use gemini-2.5-flash to describe the pattern from the photo
         let resized = image.resizedForAPI(maxDimension: 512)
         guard let imageData = resized.jpegData(compressionQuality: 0.7) else {
@@ -118,13 +118,24 @@ struct GeminiService {
         let colorList = colors.map { "\($0.name) (#\($0.hex))" }.joined(separator: ", ")
         let emphasisNote = emphasizedColors.isEmpty ? "" : " Especially emphasize: \(emphasizedColors.map { $0.name }.joined(separator: ", "))."
         let shapeNote = "The nails should have a \(shape.displayName.lowercased()) shape."
-        let addOnNote = addOn.map { " \($0.promptNote)" } ?? ""
-
-        let descriptionPrompt = """
-        Analyze this image and describe in vivid detail what the pattern, texture, and visual style looks like — for example: plaid with navy and white stripes, floral with pink petals on cream, marble with grey veining, etc.
-        Then write a single detailed image generation prompt (2–3 sentences) describing how to create a close-up photorealistic nail art photo inspired by this pattern using these colors: \(colorList).\(emphasisNote) \(shapeNote)\(addOnNote)
-        Return only the image generation prompt text, nothing else.
-        """
+        let descriptionPrompt: String
+        let fingerRule = "Show exactly 5 fingers, no more. Close-up shot of one hand only."
+        if let addOnNote {
+            // When an add-on is selected, make it the PRIMARY focus of the prompt
+            descriptionPrompt = """
+            Analyze this image briefly and note its color palette and overall mood.
+            Then write a single detailed image generation prompt (2–3 sentences) for a close-up photorealistic nail art photo where the PRIMARY design feature is: \(addOnNote)
+            The nail art should draw color inspiration from this image using: \(colorList).\(emphasisNote) \(shapeNote) \(fingerRule)
+            IMPORTANT: The add-on described above must be the dominant, clearly visible feature of the generated image — do not let the background pattern override it.
+            Return only the image generation prompt text, nothing else.
+            """
+        } else {
+            descriptionPrompt = """
+            Analyze this image and describe in vivid detail what the pattern, texture, and visual style looks like — for example: plaid with navy and white stripes, floral with pink petals on cream, marble with grey veining, etc.
+            Then write a single detailed image generation prompt (2–3 sentences) describing how to create a close-up photorealistic nail art photo inspired by this pattern using these colors: \(colorList).\(emphasisNote) \(shapeNote) \(fingerRule)
+            Return only the image generation prompt text, nothing else.
+            """
+        }
 
         let descriptionBody: [String: Any] = [
             "contents": [[

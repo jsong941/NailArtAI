@@ -34,7 +34,7 @@ struct HomeView: View {
                         .animation(.spring(response: 0.5, dampingFraction: 0.7).delay(0.1), value: animateIn)
 
                         // Headline
-                        Text("Discover your\nsignature style.")
+                        Text("Discover your\nnext style.")
                             .font(.custom("CormorantGaramond-Medium", size: 38))
                             .foregroundColor(Color(hex: "2C2925"))
                             .multilineTextAlignment(.center)
@@ -135,7 +135,7 @@ struct HomeView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("NailArtAI")
+                    Text("Vernis")
                         .font(.custom("CormorantGaramond-SemiBold", size: 20))
                         .foregroundColor(Color(hex: "2C2925"))
                 }

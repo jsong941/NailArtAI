@@ -8,7 +8,6 @@ struct NailColor: Identifiable {
 
     var swiftUIColor: Color { Color(hex: hex) }
 
-    // 3 variations: lighter → base → deeper/saturated
     var series: [Color] {
         guard let uiColor = UIColor(hex: hex) else {
             return [swiftUIColor, swiftUIColor, swiftUIColor]
@@ -28,62 +27,91 @@ enum NailPattern: String {
 
 // MARK: - Nail Shape Type
 enum NailShapeType: String, CaseIterable {
-    case rounded, almond, stiletto, flare
+    case rounded, almond, stiletto, square
 
     var displayName: String {
         switch self {
         case .rounded:  return "Round"
         case .almond:   return "Almond"
         case .stiletto: return "Stiletto"
-        case .flare:    return "Flare"
+        case .square:   return "Square"
         }
     }
 }
 
 // MARK: - Design Add-On
 enum DesignAddOn: String, CaseIterable {
-    case frenchTips   = "french_tips"
-    case solidColor   = "solid_color"
-    case gemstone     = "gemstone"
-    case chromePowder = "chrome_powder"
+    case frenchTip  = "french_tip"
+    case solidColor = "solid_color"
+    case gemStone   = "gem_stone"
+    case finish     = "finish"
 
     var displayName: String {
         switch self {
-        case .frenchTips:   return "French Tips"
-        case .solidColor:   return "Solid Color"
-        case .gemstone:     return "Gem Stone"
-        case .chromePowder: return "Chrome Powder"
+        case .frenchTip:  return "French Tip"
+        case .solidColor: return "Solid Color"
+        case .gemStone:   return "Gem Stone"
+        case .finish:     return "Finish"
         }
     }
 
     var emoji: String {
         switch self {
-        case .frenchTips:   return "🤍"
-        case .solidColor:   return "🎨"
-        case .gemstone:     return "💎"
-        case .chromePowder: return "✨"
+        case .frenchTip:  return "🤍"
+        case .solidColor: return "🎨"
+        case .gemStone:   return "💎"
+        case .finish:     return "✨"
         }
     }
 
     var description: String {
         switch self {
-        case .frenchTips:   return "Classic white tips"
-        case .solidColor:   return "Clean, minimal finish"
-        case .gemstone:     return "Crystal embellishments"
-        case .chromePowder: return "Mirror glazed finish"
+        case .frenchTip:  return "Color tips on nude base"
+        case .solidColor: return "Clean, minimal finish"
+        case .gemStone:   return "Crystal embellishments"
+        case .finish:     return "Chrome, glitter or mirror"
         }
     }
 
-    var promptNote: String {
+    var hasSubmenu: Bool {
         switch self {
-        case .frenchTips:
-            return "Add classic elegant white french tips to the nail design."
-        case .solidColor:
-            return "Keep the design clean and minimal with a smooth solid color application — no patterns or embellishments."
-        case .gemstone:
-            return "Add decorative rhinestone and crystal gemstone embellishments on accent nails for a luxurious look."
-        case .chromePowder:
-            return "Apply a chrome mirror powder finish for a glazed, ultra-reflective metallic effect — similar to Hailey Bieber's glazed donut nails."
+        case .solidColor: return false
+        default: return true
+        }
+    }
+}
+
+// MARK: - Gem Stone Style
+enum GemStoneStyle: String, CaseIterable {
+    case minimalism = "minimalism"
+    case maximalism = "maximalism"
+
+    var displayName: String {
+        switch self {
+        case .minimalism: return "Minimalism"
+        case .maximalism: return "Maximalism"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .minimalism: return "Max 3 gems per finger"
+        case .maximalism: return "Full coverage, bold look"
+        }
+    }
+}
+
+// MARK: - Finish Style
+enum FinishStyle: String, CaseIterable {
+    case chromePowder = "chrome_powder"
+    case glitters     = "glitters"
+    case mirrorPowder = "mirror_powder"
+
+    var displayName: String {
+        switch self {
+        case .chromePowder: return "Chrome Powder"
+        case .glitters:     return "Glitters"
+        case .mirrorPowder: return "Mirror Powder"
         }
     }
 }
