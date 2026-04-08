@@ -135,7 +135,7 @@ struct HomeView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Vernis")
+                    Text("Nomi Nail")
                         .font(.custom("CormorantGaramond-SemiBold", size: 20))
                         .foregroundColor(Color(hex: "2C2925"))
                 }

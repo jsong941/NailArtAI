@@ -31,7 +31,7 @@ struct PaywallView: View {
                     }
                     .padding(.top, 40)
 
-                    Text("Vernis Pro")
+                    Text("Nomi Nail Pro")
                         .font(.custom("CormorantGaramond-SemiBold", size: 32))
                         .foregroundColor(Color(hex: "2C2925"))
 

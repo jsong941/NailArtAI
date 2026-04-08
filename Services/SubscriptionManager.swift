@@ -9,9 +9,9 @@ class SubscriptionManager: ObservableObject {
 
     // MARK: - Constants
 
-    static let proMonthlyID = "com.vernis.pro.monthly"
+    static let proMonthlyID = "com.nominail.pro.monthly"
     static let monthlyLimit = 20
-    static let freeLimit = 400
+    static let freeLimit = 3
 
     // MARK: - Published State
 
