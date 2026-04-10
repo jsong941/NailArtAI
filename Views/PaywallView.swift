@@ -155,6 +155,14 @@ struct PaywallView: View {
                         .foregroundColor(Color(hex: "8E8A83").opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
+
+                    HStack(spacing: 16) {
+                        Link("Privacy Policy", destination: URL(string: "https://purrfect-allium-817.notion.site/Nomi-Nail-33c61c6829748062a855e2d6950c91f2")!)
+                        Text("·")
+                        Link("Terms of Use", destination: URL(string: "https://purrfect-allium-817.notion.site/Nomi-Nail-Terms-of-Use-33e61c68297480c08456c009545df66a")!)
+                    }
+                    .font(.system(size: 11))
+                    .foregroundColor(Color(hex: "8E8A83"))
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
