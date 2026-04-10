@@ -1,8 +1,11 @@
 import SwiftUI
+import SwiftData
 
 struct ColorSelectionView: View {
     let image: UIImage
     @StateObject private var viewModel = ColorSelectionViewModel()
+    @Environment(\.modelContext) private var modelContext
+    @State private var hasSavedToHistory = false
     @State private var showIntentSheet = false
     @State private var navigateToShop = false
     @State private var navigateToGenerate = false
@@ -196,6 +199,11 @@ struct ColorSelectionView: View {
         .onAppear {
             animateIn = true
             viewModel.extractColors(from: image)
+        }
+        .onChange(of: viewModel.isLoading) { _, isLoading in
+            guard !isLoading, !viewModel.allColors.isEmpty, !hasSavedToHistory else { return }
+            hasSavedToHistory = true
+            modelContext.insert(HistorySession(colors: viewModel.allColors, designs: []))
         }
     }
 }

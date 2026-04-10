@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: - NailColor Model
-struct NailColor: Identifiable {
+struct NailColor: Identifiable, Equatable {
     let id = UUID()
     let name: String
     let hex: String
@@ -106,12 +106,14 @@ enum FinishStyle: String, CaseIterable {
     case chromePowder = "chrome_powder"
     case glitters     = "glitters"
     case mirrorPowder = "mirror_powder"
+    case catEye       = "cat_eye"
 
     var displayName: String {
         switch self {
         case .chromePowder: return "Chrome Powder"
         case .glitters:     return "Glitters"
         case .mirrorPowder: return "Mirror Powder"
+        case .catEye:       return "Cat Eye"
         }
     }
 }

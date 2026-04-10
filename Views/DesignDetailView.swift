@@ -164,9 +164,13 @@ struct GenerateDesignView: View {
             case .chromePowder:
                 return "Apply a chrome mirror powder finish for a glazed, ultra-reflective metallic effect."
             case .glitters:
-                return "Apply chunky glitter particles across the nails for a sparkling, multidimensional finish."
+                return "Cover the nails entirely in dense, holographic fine glitter — iridescent rainbow sparkle packed wall-to-wall with no bare nail visible, catching light in multiple colors. The glitter should look lavishly full and multidimensional, similar to Holo Taco-style holographic glitter nails."
             case .mirrorPowder:
                 return "Apply an ultra-high-shine mirror powder finish for an intense, glass-like reflective effect."
+            case .catEye:
+                let baseColor = emphasizedColors.first ?? colors.first
+                let baseName = baseColor?.name ?? "deep jewel-toned"
+                return "Magnetic cat eye gel nails with \(baseName) as the base. Exactly one single streak of light per nail — no multiple highlights, no split streaks. The streak emerges organically from within the nail, a soft luminous glow that fades seamlessly into the base with no visible edge or border. The streak is a lighter reflection of the same \(baseName) tone, like light refracting through deep glass. Glossy, gel-like finish."
             case nil:
                 return "Apply a special finish to the nails for added visual interest."
             }
@@ -251,18 +255,42 @@ struct GenerateDesignView: View {
                         .opacity(animateIn ? 1 : 0)
                         .animation(.easeOut(duration: 0.4).delay(0.18), value: animateIn)
 
-                    // Generations remaining hint (free users only)
-                    if !subscriptionManager.isSubscribed && generatedImage == nil {
+                    // Generations remaining warning (free users only)
+                    if !subscriptionManager.isSubscribed {
                         let remaining = subscriptionManager.generationsRemaining
-                        Text(remaining > 0
-                             ? "\(remaining) free generation\(remaining == 1 ? "" : "s") remaining"
-                             : "Free limit reached — upgrade to Pro")
-                            .font(.custom("CormorantGaramond-Italic", size: 13))
-                            .foregroundColor(remaining > 0 ? Color(hex: "8E8A83") : Color(hex: "C9A84C"))
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.horizontal, 24)
-                            .opacity(animateIn ? 1 : 0)
-                            .animation(.easeOut(duration: 0.4).delay(0.22), value: animateIn)
+                        let isOut = remaining == 0
+                        let isLow = remaining == 1
+                        HStack(spacing: 10) {
+                            Image(systemName: isOut ? "exclamationmark.circle.fill" : "info.circle.fill")
+                                .font(.system(size: 15))
+                                .foregroundColor(isOut ? .red : isLow ? Color(hex: "C9A84C") : Color(hex: "8E8A83"))
+                            Text(isOut
+                                 ? "No generations left — upgrade to keep creating"
+                                 : "\(remaining) free generation\(remaining == 1 ? "" : "s") left")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 14))
+                                .foregroundColor(isOut ? .red : isLow ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
+                            Spacer()
+                            if !isOut {
+                                Button {
+                                    showPaywall = true
+                                } label: {
+                                    Text("Upgrade")
+                                        .font(.custom("CormorantGaramond-SemiBold", size: 13))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(Color(hex: "C9A84C"))
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .padding(12)
+                        .background(isOut ? Color.red.opacity(0.07) : isLow ? Color(hex: "C9A84C").opacity(0.08) : Color(hex: "F5F5F5"))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(isOut ? Color.red.opacity(0.2) : isLow ? Color(hex: "C9A84C").opacity(0.25) : Color.clear, lineWidth: 1))
+                        .padding(.horizontal, 24)
+                        .opacity(animateIn ? 1 : 0)
+                        .animation(.easeOut(duration: 0.4).delay(0.22), value: animateIn)
                     }
 
                     // Generate button
@@ -274,7 +302,9 @@ struct GenerateDesignView: View {
                                 Image(systemName: generatedImage == nil ? "wand.and.sparkles" : "arrow.clockwise")
                                     .font(.system(size: 15, weight: .light))
                             }
-                            Text(generatedImage == nil ? "Generate" : "Regenerate")
+                            Text(subscriptionManager.generationsRemaining == 0 && !subscriptionManager.isSubscribed
+                                 ? "Keep Designing!"
+                                 : generatedImage == nil ? "Generate" : "Regenerate")
                                 .font(.custom("CormorantGaramond-SemiBold", size: 18))
                         }
                         .foregroundColor(.white)
@@ -559,7 +589,8 @@ struct GenerateDesignView: View {
             .padding(.bottom, 6)
 
         case .finish:
-            HStack(spacing: 8) {
+            let columns = [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
+            LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(FinishStyle.allCases, id: \.rawValue) { style in
                     let isChosen = finishStyle == style
                     Button {
@@ -569,8 +600,8 @@ struct GenerateDesignView: View {
                         Text(style.displayName)
                             .font(.custom("CormorantGaramond-SemiBold", size: 13))
                             .foregroundColor(isChosen ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
                             .background(isChosen ? Color(hex: "C9A84C").opacity(0.08) : Color.white)
                             .clipShape(Capsule())
                             .overlay(Capsule().stroke(isChosen ? Color(hex: "C9A84C") : Color(hex: "E8E4DF"), lineWidth: 1.5))

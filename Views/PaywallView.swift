@@ -4,14 +4,59 @@ import StoreKit
 struct PaywallView: View {
     @EnvironmentObject var subscriptionManager: SubscriptionManager
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedTier: PurchaseTier = .pro
     @State private var animateIn = false
 
-    private var proProduct: Product? {
-        subscriptionManager.products.first
-    }
+    enum PurchaseTier: CaseIterable {
+        case starter, value, pro
 
-    private var priceString: String {
-        proProduct?.displayPrice ?? "$4.99"
+        var title: String {
+            switch self {
+            case .starter: return "Starter Pack"
+            case .value:   return "Value Pack"
+            case .pro:     return "Pro Monthly"
+            }
+        }
+
+        var generations: String {
+            switch self {
+            case .starter: return "5 generations"
+            case .value:   return "10 generations"
+            case .pro:     return "40 generations/mo"
+            }
+        }
+
+        var fallbackPrice: String {
+            switch self {
+            case .starter: return "$1.99"
+            case .value:   return "$2.99"
+            case .pro:     return "$9.99"
+            }
+        }
+
+        var productID: String {
+            switch self {
+            case .starter: return SubscriptionManager.starterPackID
+            case .value:   return SubscriptionManager.valuePackID
+            case .pro:     return SubscriptionManager.proMonthlyID
+            }
+        }
+
+        var badge: String? {
+            switch self {
+            case .value:   return "Best Value"
+            case .pro:     return "Most Popular"
+            case .starter: return nil
+            }
+        }
+
+        var detail: String {
+            switch self {
+            case .starter: return "One-time purchase · never expires"
+            case .value:   return "One-time purchase · never expires"
+            case .pro:     return "Renews monthly · cancel anytime"
+            }
+        }
     }
 
     var body: some View {
@@ -20,23 +65,23 @@ struct PaywallView: View {
 
             VStack(spacing: 0) {
                 // Header
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     ZStack {
                         Circle()
                             .fill(Color(hex: "C9A84C").opacity(0.12))
-                            .frame(width: 80, height: 80)
+                            .frame(width: 72, height: 72)
                         Image(systemName: "sparkles")
-                            .font(.system(size: 32, weight: .light))
+                            .font(.system(size: 28, weight: .light))
                             .foregroundColor(Color(hex: "C9A84C"))
                     }
                     .padding(.top, 40)
 
-                    Text("Nomi Nail Pro")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 32))
+                    Text("Get More Designs")
+                        .font(.custom("CormorantGaramond-SemiBold", size: 30))
                         .foregroundColor(Color(hex: "2C2925"))
 
-                    Text("20 AI nail art designs every month")
-                        .font(.custom("CormorantGaramond-Italic", size: 17))
+                    Text("You've used your free generations.\nChoose a plan to keep creating.")
+                        .font(.custom("CormorantGaramond-Italic", size: 16))
                         .foregroundColor(Color(hex: "8E8A83"))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
@@ -44,35 +89,43 @@ struct PaywallView: View {
                 .opacity(animateIn ? 1 : 0)
                 .animation(.easeOut(duration: 0.4), value: animateIn)
 
-                // Usage indicator
-                usageCard
-                    .padding(.horizontal, 24)
-                    .padding(.top, 28)
-                    .opacity(animateIn ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.1), value: animateIn)
-
-                // Benefits
-                benefitsCard
-                    .padding(.horizontal, 24)
-                    .padding(.top, 16)
-                    .opacity(animateIn ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.18), value: animateIn)
+                // Tier cards
+                VStack(spacing: 10) {
+                    ForEach(PurchaseTier.allCases, id: \.title) { tier in
+                        TierCard(
+                            tier: tier,
+                            isSelected: selectedTier == tier,
+                            price: subscriptionManager.product(for: tier.productID)?.displayPrice ?? tier.fallbackPrice
+                        )
+                        .onTapGesture {
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                                selectedTier = tier
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
+                .opacity(animateIn ? 1 : 0)
+                .animation(.easeOut(duration: 0.4).delay(0.1), value: animateIn)
 
                 Spacer()
 
                 // CTA
                 VStack(spacing: 12) {
                     Button {
-                        Task { await subscriptionManager.purchase() }
+                        Task { await subscriptionManager.purchase(productID: selectedTier.productID) }
                     } label: {
                         ZStack {
                             if subscriptionManager.isPurchasing {
                                 ProgressView().tint(.white)
                             } else {
+                                let price = subscriptionManager.product(for: selectedTier.productID)?.displayPrice ?? selectedTier.fallbackPrice
                                 VStack(spacing: 2) {
-                                    Text("Start Pro — \(priceString)/month")
+                                    Text(selectedTier == .pro ? "Subscribe — \(price)/month" : "Buy \(selectedTier.title) — \(price)")
                                         .font(.custom("CormorantGaramond-SemiBold", size: 18))
-                                    Text("Cancel anytime in App Store settings")
+                                    Text(selectedTier.detail)
                                         .font(.custom("CormorantGaramond-Italic", size: 12))
                                         .opacity(0.8)
                                 }
@@ -106,7 +159,7 @@ struct PaywallView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
                 .opacity(animateIn ? 1 : 0)
-                .animation(.easeOut(duration: 0.4).delay(0.26), value: animateIn)
+                .animation(.easeOut(duration: 0.4).delay(0.2), value: animateIn)
             }
 
             // Dismiss button
@@ -132,70 +185,63 @@ struct PaywallView: View {
             if isSubscribed { dismiss() }
         }
     }
+}
 
-    // MARK: - Usage Card
+// MARK: - Tier Card
 
-    @ViewBuilder
-    private var usageCard: some View {
-        let used = SubscriptionManager.freeLimit - subscriptionManager.generationsRemaining
-        let total = SubscriptionManager.freeLimit
+private struct TierCard: View {
+    let tier: PaywallView.PurchaseTier
+    let isSelected: Bool
+    let price: String
 
-        VStack(spacing: 10) {
-            HStack {
-                Text("Free generations used")
-                    .font(.custom("CormorantGaramond-SemiBold", size: 15))
-                    .foregroundColor(Color(hex: "2C2925"))
-                Spacer()
-                Text("\(used) of \(total)")
-                    .font(.custom("CormorantGaramond-SemiBold", size: 15))
-                    .foregroundColor(Color(hex: "C9A84C"))
-            }
-
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(hex: "E8E4DF"))
-                        .frame(height: 6)
-                    RoundedRectangle(cornerRadius: 4)
+    var body: some View {
+        HStack(spacing: 14) {
+            // Radio button
+            ZStack {
+                Circle()
+                    .stroke(isSelected ? Color(hex: "C9A84C") : Color(hex: "D1D1D6"), lineWidth: 2)
+                    .frame(width: 22, height: 22)
+                if isSelected {
+                    Circle()
                         .fill(Color(hex: "C9A84C"))
-                        .frame(width: total > 0 ? geo.size.width * CGFloat(used) / CGFloat(total) : 0, height: 6)
+                        .frame(width: 12, height: 12)
                 }
             }
-            .frame(height: 6)
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 8) {
+                    Text(tier.title)
+                        .font(.custom("CormorantGaramond-SemiBold", size: 16))
+                        .foregroundColor(Color(hex: "2C2925"))
+                    if let badge = tier.badge {
+                        Text(badge)
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(Color(hex: "C9A84C"))
+                            .clipShape(Capsule())
+                    }
+                }
+                Text(tier.generations)
+                    .font(.custom("CormorantGaramond-Italic", size: 13))
+                    .foregroundColor(Color(hex: "8E8A83"))
+            }
+
+            Spacer()
+
+            Text(price)
+                .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                .foregroundColor(isSelected ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
         }
         .padding(16)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 3)
-    }
-
-    // MARK: - Benefits Card
-
-    @ViewBuilder
-    private var benefitsCard: some View {
-        VStack(spacing: 0) {
-            benefitRow(emoji: "✨", title: "20 AI designs/month", subtitle: "Resets every month, no rollover pressure")
-            Divider().opacity(0.4).padding(.horizontal, 16)
-            benefitRow(emoji: "🛍️", title: "Shop This Look — always free", subtitle: "Amazon affiliate links, no subscription needed")
-            Divider().opacity(0.4).padding(.horizontal, 16)
-            benefitRow(emoji: "⭐", title: "Priority access to new features", subtitle: "Style presets, inspo gallery, and more")
-        }
-        .background(Color.white)
+        .background(isSelected ? Color(hex: "C9A84C").opacity(0.06) : Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 3)
-    }
-
-    private func benefitRow(emoji: String, title: String, subtitle: String) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(title)
-                .font(.custom("CormorantGaramond-SemiBold", size: 16))
-                .foregroundColor(Color(hex: "2C2925"))
-            Text(subtitle)
-                .font(.custom("CormorantGaramond-Italic", size: 13))
-                .foregroundColor(Color(hex: "8E8A83"))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 14)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(isSelected ? Color(hex: "C9A84C") : Color(hex: "E8E4DF"), lineWidth: isSelected ? 2 : 1)
+        )
+        .shadow(color: Color.black.opacity(isSelected ? 0.06 : 0.03), radius: 8, x: 0, y: 2)
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
     }
 }

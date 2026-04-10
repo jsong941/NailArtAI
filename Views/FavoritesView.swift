@@ -4,6 +4,8 @@ import SwiftData
 struct FavoritesView: View {
     @Query(sort: \FavoriteDesign.savedAt, order: .reverse) private var favorites: [FavoriteDesign]
     @Environment(\.modelContext) private var modelContext
+    @State private var renaming: FavoriteDesign? = nil
+    @State private var renameText = ""
 
     var body: some View {
         ZStack {
@@ -31,6 +33,19 @@ struct FavoritesView: View {
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 6, leading: 24, bottom: 6, trailing: 24))
+                        .contextMenu {
+                            Button {
+                                renameText = favorite.title
+                                renaming = favorite
+                            } label: {
+                                Label("Rename", systemImage: "pencil")
+                            }
+                            Button(role: .destructive) {
+                                modelContext.delete(favorite)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                     .onDelete { indexSet in
                         for index in indexSet {
@@ -44,6 +59,19 @@ struct FavoritesView: View {
         }
         .navigationTitle("Favorites")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Rename", isPresented: Binding(
+            get: { renaming != nil },
+            set: { if !$0 { renaming = nil } }
+        )) {
+            TextField("Name", text: $renameText)
+            Button("Save") {
+                if let favorite = renaming, !renameText.trimmingCharacters(in: .whitespaces).isEmpty {
+                    favorite.title = renameText.trimmingCharacters(in: .whitespaces)
+                }
+                renaming = nil
+            }
+            Button("Cancel", role: .cancel) { renaming = nil }
+        }
     }
 }
 

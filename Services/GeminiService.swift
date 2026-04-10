@@ -120,19 +120,20 @@ struct GeminiService {
         let shapeNote = "The nails should have a \(shape.displayName.lowercased()) shape."
         let descriptionPrompt: String
         let fingerRule = "Show exactly 5 fingers, no more. Close-up shot of one hand only."
+        let styleAnchor = "The overall aesthetic should reflect Korean nail salon style: clean precise execution, soft editorial lighting, minimal negative space, glass-like finish, and a refined polished look — as if photographed for a high-end Korean beauty editorial."
         if let addOnNote {
             // When an add-on is selected, make it the PRIMARY focus of the prompt
             descriptionPrompt = """
             Analyze this image briefly and note its color palette and overall mood.
             Then write a single detailed image generation prompt (2–3 sentences) for a close-up photorealistic nail art photo where the PRIMARY design feature is: \(addOnNote)
-            The nail art should draw color inspiration from this image using: \(colorList).\(emphasisNote) \(shapeNote) \(fingerRule)
+            The nail art should draw color inspiration from this image using: \(colorList).\(emphasisNote) \(shapeNote) \(fingerRule) \(styleAnchor)
             IMPORTANT: The add-on described above must be the dominant, clearly visible feature of the generated image — do not let the background pattern override it.
             Return only the image generation prompt text, nothing else.
             """
         } else {
             descriptionPrompt = """
             Analyze this image and describe in vivid detail what the pattern, texture, and visual style looks like — for example: plaid with navy and white stripes, floral with pink petals on cream, marble with grey veining, etc.
-            Then write a single detailed image generation prompt (2–3 sentences) describing how to create a close-up photorealistic nail art photo inspired by this pattern using these colors: \(colorList).\(emphasisNote) \(shapeNote) \(fingerRule)
+            Then write a single detailed image generation prompt (2–3 sentences) describing how to create a close-up photorealistic nail art photo inspired by this pattern using these colors: \(colorList).\(emphasisNote) \(shapeNote) \(fingerRule) \(styleAnchor)
             Return only the image generation prompt text, nothing else.
             """
         }

@@ -26,6 +26,14 @@ struct HistoryView: View {
                             modelContext.delete(sessions[index])
                         }
                     }
+
+                    Text("History is kept for 7 days, then automatically removed.")
+                        .font(.custom("CormorantGaramond-Italic", size: 13))
+                        .foregroundColor(Color(hex: "8E8E93"))
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 24, bottom: 16, trailing: 24))
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
@@ -33,6 +41,12 @@ struct HistoryView: View {
         }
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: .now) ?? .now
+            for session in sessions where session.createdAt < cutoff {
+                modelContext.delete(session)
+            }
+        }
     }
 }
 
@@ -58,7 +72,7 @@ struct HistorySessionRow: View {
                 Text(session.createdAt, format: .dateTime.month(.wide).day().year())
                     .font(.custom("CormorantGaramond-SemiBold", size: 16))
                     .foregroundColor(Color(hex: "1C1C1E"))
-                Text("\(session.designs.count) designs · \(session.createdAt, format: .dateTime.hour().minute())")
+                Text("\(session.colors.count) colors extracted · \(session.createdAt, format: .dateTime.hour().minute())")
                     .font(.custom("CormorantGaramond-Italic", size: 13))
                     .foregroundColor(Color(hex: "8E8E93"))
             }
@@ -90,6 +104,11 @@ struct EmptyHistoryView: View {
                 .foregroundColor(Color(hex: "8E8E93"))
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
+
+            Text("Sessions are kept for 7 days.")
+                .font(.custom("CormorantGaramond-Italic", size: 13))
+                .foregroundColor(Color(hex: "8E8E93").opacity(0.7))
+                .multilineTextAlignment(.center)
         }
     }
 }

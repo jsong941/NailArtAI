@@ -38,21 +38,11 @@ struct HistoryDetailView: View {
                     .opacity(animateIn ? 1 : 0)
                     .animation(.easeOut(duration: 0.4).delay(0.05), value: animateIn)
 
-                    // Design list
+                    // Shop This Look
                     VStack(alignment: .leading, spacing: 12) {
-                        SectionHeader(title: "Design Ideas", icon: "sparkles")
-
-                        ForEach(session.designs) { suggestion in
-                            NavigationLink(destination: DesignDetailView(suggestion: suggestion, colors: session.colors)) {
-                                DesignSuggestionCard(suggestion: suggestion)
-                            }
-                            .buttonStyle(.plain)
-                            .simultaneousGesture(TapGesture().onEnded {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            })
-                        }
+                        ShopThisLookCard(colors: session.colors)
+                            .padding(.horizontal, 24)
                     }
-                    .padding(.horizontal, 24)
                     .opacity(animateIn ? 1 : 0)
                     .offset(y: animateIn ? 0 : 16)
                     .animation(.easeOut(duration: 0.45).delay(0.15), value: animateIn)

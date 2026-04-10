@@ -9,9 +9,14 @@ class SubscriptionManager: ObservableObject {
 
     // MARK: - Constants
 
-    static let proMonthlyID = "com.nominail.pro.monthly"
-    static let monthlyLimit = 20
-    static let freeLimit = 3
+    static let proMonthlyID   = "com.nominail.pro.monthly2"
+    static let starterPackID  = "com.nominail.starter.pack"
+    static let valuePackID    = "com.nominail.value.pack"
+
+    static let monthlyLimit   = 40
+    static let freeLimit      = 3
+    static let starterPackGen = 5
+    static let valuePackGen   = 10
 
     // MARK: - Published State
 
@@ -21,10 +26,11 @@ class SubscriptionManager: ObservableObject {
 
     // MARK: - Persistent Counters
 
-    @AppStorage("freeGenerationsUsed") var freeGenerationsUsed = 0
+    @AppStorage("freeGenerationsUsed")    var freeGenerationsUsed    = 0
     @AppStorage("monthlyGenerationsUsed") var monthlyGenerationsUsed = 0
+    @AppStorage("packGenerationsBalance") var packGenerationsBalance  = 0
     @AppStorage("cycleMonth") var cycleMonth = Calendar.current.component(.month, from: Date())
-    @AppStorage("cycleYear") var cycleYear = Calendar.current.component(.year, from: Date())
+    @AppStorage("cycleYear")  var cycleYear  = Calendar.current.component(.year,  from: Date())
 
     // MARK: - Lifecycle
 
@@ -48,38 +54,39 @@ class SubscriptionManager: ObservableObject {
         if isSubscribed {
             resetCycleIfNeeded()
             return monthlyGenerationsUsed < Self.monthlyLimit
-        } else {
-            return freeGenerationsUsed < Self.freeLimit
         }
+        return freeGenerationsUsed < Self.freeLimit || packGenerationsBalance > 0
     }
 
     var generationsRemaining: Int {
         if isSubscribed {
             resetCycleIfNeeded()
             return max(0, Self.monthlyLimit - monthlyGenerationsUsed)
-        } else {
-            return max(0, Self.freeLimit - freeGenerationsUsed)
         }
+        let freeLeft = max(0, Self.freeLimit - freeGenerationsUsed)
+        return freeLeft + packGenerationsBalance
     }
 
     func recordGeneration() {
         if isSubscribed {
             monthlyGenerationsUsed += 1
-        } else {
+        } else if freeGenerationsUsed < Self.freeLimit {
             freeGenerationsUsed += 1
+        } else if packGenerationsBalance > 0 {
+            packGenerationsBalance -= 1
         }
     }
 
     // MARK: - Cycle Reset
 
     private func resetCycleIfNeeded() {
-        let now = Date()
+        let now   = Date()
         let month = Calendar.current.component(.month, from: now)
-        let year = Calendar.current.component(.year, from: now)
+        let year  = Calendar.current.component(.year,  from: now)
         if month != cycleMonth || year != cycleYear {
             monthlyGenerationsUsed = 0
             cycleMonth = month
-            cycleYear = year
+            cycleYear  = year
         }
     }
 
@@ -87,14 +94,22 @@ class SubscriptionManager: ObservableObject {
 
     func loadProducts() async {
         do {
-            products = try await Product.products(for: [Self.proMonthlyID])
+            products = try await Product.products(for: [
+                Self.proMonthlyID,
+                Self.starterPackID,
+                Self.valuePackID
+            ])
         } catch {
             print("[StoreKit] Failed to load products: \(error)")
         }
     }
 
-    func purchase() async {
-        guard let product = products.first else { return }
+    func product(for id: String) -> Product? {
+        products.first { $0.id == id }
+    }
+
+    func purchase(productID: String) async {
+        guard let product = product(for: productID) else { return }
         isPurchasing = true
         defer { isPurchasing = false }
         do {
@@ -103,6 +118,12 @@ class SubscriptionManager: ObservableObject {
             case .success(let verification):
                 let transaction = try checkVerified(verification)
                 await transaction.finish()
+                // Credit pack generations
+                switch productID {
+                case Self.starterPackID: packGenerationsBalance += Self.starterPackGen
+                case Self.valuePackID:   packGenerationsBalance += Self.valuePackGen
+                default: break
+                }
                 await refreshSubscriptionStatus()
             case .userCancelled, .pending:
                 break
@@ -112,6 +133,11 @@ class SubscriptionManager: ObservableObject {
         } catch {
             print("[StoreKit] Purchase failed: \(error)")
         }
+    }
+
+    // Convenience for existing paywall subscribe button
+    func purchase() async {
+        await purchase(productID: Self.proMonthlyID)
     }
 
     func restorePurchases() async {
