@@ -163,15 +163,19 @@ struct GeminiService {
         ]
 
         let url = URL(string: "\(baseURL)/\(imageGenModel):generateContent?key=\(apiKey)")!
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: url, timeoutInterval: 120)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONSerialization.data(withJSONObject: imageGenBody)
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
             let body = String(data: data, encoding: .utf8) ?? "no body"
-            print("[PhotoInspired] Image gen error \((response as? HTTPURLResponse)?.statusCode ?? -1): \(body)")
+            print("[PhotoInspired] Image gen error \(statusCode): \(body)")
+            if statusCode == 503 || statusCode == 429 {
+                throw GeminiError.serverBusy
+            }
             throw GeminiError.apiError
         }
 
@@ -292,12 +296,14 @@ enum GeminiError: LocalizedError {
     case imageEncodingFailed
     case apiError
     case parseError
+    case serverBusy
 
     var errorDescription: String? {
         switch self {
         case .imageEncodingFailed: return "Failed to process the image."
         case .apiError:            return "Could not reach the AI service. Please check your connection and try again."
         case .parseError:          return "Could not read the AI response. Please try again."
+        case .serverBusy:          return "All of our nail designers are busy. Please try again."
         }
     }
 }

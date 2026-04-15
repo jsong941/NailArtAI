@@ -67,20 +67,21 @@ struct ColorSelectionView: View {
                             }
                         } else {
                             HStack(alignment: .top, spacing: 14) {
+                                Spacer()
                                 ForEach(viewModel.allColors) { color in
-                                    VStack(spacing: 6) {
+                                    VStack(spacing: 8) {
                                         Circle()
                                             .fill(color.swiftUIColor)
-                                            .frame(width: 44, height: 44)
+                                            .frame(width: 54, height: 54)
                                             .shadow(color: color.swiftUIColor.opacity(0.3), radius: 5, x: 0, y: 2)
                                             .overlay(Circle().stroke(Color.white, lineWidth: 2))
                                         Text(color.name)
-                                            .font(.custom("CormorantGaramond-Regular", size: 10))
+                                            .font(.custom("CormorantGaramond-SemiBold", size: 13))
                                             .foregroundColor(Color(hex: "8E8A83"))
                                             .lineLimit(2)
                                             .multilineTextAlignment(.center)
                                             .minimumScaleFactor(0.8)
-                                            .frame(width: 52)
+                                            .frame(width: 64)
                                     }
                                 }
                                 Spacer()

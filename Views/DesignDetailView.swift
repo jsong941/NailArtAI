@@ -123,6 +123,7 @@ struct GenerateDesignView: View {
     @State private var generatedImage: UIImage? = nil
     @State private var isGenerating = false
     @State private var generationError = false
+    @State private var generationErrorMessage: String? = nil
     @State private var emphasizedColorIDs: Set<UUID> = []
     @State private var selectedAddOn: DesignAddOn? = nil
     @State private var frenchTipColor: NailColor? = nil
@@ -227,9 +228,11 @@ struct GenerateDesignView: View {
                             Image(systemName: "exclamationmark.circle")
                                 .font(.system(size: 32, weight: .light))
                                 .foregroundColor(Color(hex: "C9A84C"))
-                            Text("Couldn't generate your design")
+                            Text(generationErrorMessage ?? "Couldn't generate your design")
                                 .font(.custom("CormorantGaramond-SemiBold", size: 17))
                                 .foregroundColor(Color(hex: "2C2925"))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 24)
                             Button(action: generateImage) {
                                 Text("Try Again")
                                     .font(.custom("CormorantGaramond-SemiBold", size: 15))
@@ -690,6 +693,7 @@ struct GenerateDesignView: View {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         isGenerating = true
         generationError = false
+        generationErrorMessage = nil
         Task {
             do {
                 generatedImage = try await GeminiService().generatePhotoInspiredImage(
@@ -703,6 +707,7 @@ struct GenerateDesignView: View {
                 isFavorited = false
             } catch {
                 print("[Generate] Failed: \(error)")
+                generationErrorMessage = (error as? GeminiError)?.errorDescription
                 generationError = true
             }
             isGenerating = false
