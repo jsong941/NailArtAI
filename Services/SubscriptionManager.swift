@@ -1,6 +1,7 @@
 import StoreKit
 import SwiftUI
 import Combine
+import Security
 
 @MainActor
 class SubscriptionManager: ObservableObject {
@@ -14,9 +15,16 @@ class SubscriptionManager: ObservableObject {
     static let valuePackID    = "com.nominail.value.pack"
 
     static let monthlyLimit   = 40
-    static let freeLimit      = 3
+    static let freeLimit      = 5
     static let starterPackGen = 5
     static let valuePackGen   = 10
+
+    private static let keychainService  = "com.nominail.app"
+    private static let freeGenKey       = "freeGenerationsUsed"
+    private static let packBalanceKey   = "packGenerationsBalance"
+    private static let monthlyUsedKey   = "monthlyGenerationsUsed"
+    private static let cycleMonthKey    = "cycleMonth"
+    private static let cycleYearKey     = "cycleYear"
 
     // MARK: - Published State
 
@@ -26,17 +34,56 @@ class SubscriptionManager: ObservableObject {
 
     // MARK: - Persistent Counters
 
-    @AppStorage("freeGenerationsUsed")    var freeGenerationsUsed    = 0
-    @AppStorage("monthlyGenerationsUsed") var monthlyGenerationsUsed = 0
-    @AppStorage("packGenerationsBalance") var packGenerationsBalance  = 0
-    @AppStorage("cycleMonth") var cycleMonth = Calendar.current.component(.month, from: Date())
-    @AppStorage("cycleYear")  var cycleYear  = Calendar.current.component(.year,  from: Date())
+    // freeGenerationsUsed is stored in Keychain so it survives app deletion/reinstall
+    var freeGenerationsUsed: Int {
+        get { keychainReadInt(Self.freeGenKey) ?? 0 }
+        set {
+            objectWillChange.send()
+            keychainWriteInt(Self.freeGenKey, value: newValue)
+        }
+    }
+
+    var packGenerationsBalance: Int {
+        get { keychainReadInt(Self.packBalanceKey) ?? 0 }
+        set { objectWillChange.send(); keychainWriteInt(Self.packBalanceKey, value: newValue) }
+    }
+
+    var monthlyGenerationsUsed: Int {
+        get { keychainReadInt(Self.monthlyUsedKey) ?? 0 }
+        set { objectWillChange.send(); keychainWriteInt(Self.monthlyUsedKey, value: newValue) }
+    }
+
+    var cycleMonth: Int {
+        get { keychainReadInt(Self.cycleMonthKey) ?? Calendar.current.component(.month, from: Date()) }
+        set { keychainWriteInt(Self.cycleMonthKey, value: newValue) }
+    }
+
+    var cycleYear: Int {
+        get { keychainReadInt(Self.cycleYearKey) ?? Calendar.current.component(.year, from: Date()) }
+        set { keychainWriteInt(Self.cycleYearKey, value: newValue) }
+    }
 
     // MARK: - Lifecycle
 
     private var transactionListenerTask: Task<Void, Never>?
 
     init() {
+        // One-time migration: move all counters from UserDefaults → Keychain
+        // so they survive app deletion and reinstall.
+        let migrations: [(String, String)] = [
+            ("freeGenerationsUsed",    Self.freeGenKey),
+            ("packGenerationsBalance", Self.packBalanceKey),
+            ("monthlyGenerationsUsed", Self.monthlyUsedKey),
+            ("cycleMonth",             Self.cycleMonthKey),
+            ("cycleYear",              Self.cycleYearKey)
+        ]
+        for (udKey, kcKey) in migrations {
+            if keychainReadInt(kcKey) == nil {
+                let legacy = UserDefaults.standard.integer(forKey: udKey)
+                keychainWriteInt(kcKey, value: legacy)
+            }
+        }
+
         transactionListenerTask = listenForTransactions()
         Task {
             await loadProducts()
@@ -184,6 +231,39 @@ class SubscriptionManager: ObservableObject {
             throw StoreKitError.userCancelled
         case .verified(let value):
             return value
+        }
+    }
+
+    // MARK: - Keychain Helpers
+
+    private func keychainReadInt(_ key: String) -> Int? {
+        let query: [String: Any] = [
+            kSecClass as String:       kSecClassGenericPassword,
+            kSecAttrService as String: Self.keychainService,
+            kSecAttrAccount as String: key,
+            kSecReturnData as String:  true,
+            kSecMatchLimit as String:  kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
+              let data = result as? Data,
+              let str  = String(data: data, encoding: .utf8),
+              let value = Int(str) else { return nil }
+        return value
+    }
+
+    private func keychainWriteInt(_ key: String, value: Int) {
+        let data = Data(String(value).utf8)
+        let query: [String: Any] = [
+            kSecClass as String:       kSecClassGenericPassword,
+            kSecAttrService as String: Self.keychainService,
+            kSecAttrAccount as String: key
+        ]
+        let attributes: [String: Any] = [kSecValueData as String: data]
+        if SecItemUpdate(query as CFDictionary, attributes as CFDictionary) == errSecItemNotFound {
+            var addQuery = query
+            addQuery[kSecValueData as String] = data
+            SecItemAdd(addQuery as CFDictionary, nil)
         }
     }
 }
