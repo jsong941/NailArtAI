@@ -17,7 +17,7 @@ class SubscriptionManager: ObservableObject {
     static let monthlyLimit   = 40
     static let freeLimit      = 5
     static let starterPackGen = 5
-    static let valuePackGen   = 20
+    static let valuePackGen   = 15
 
     private static let keychainService  = "com.nominail.app"
     private static let freeGenKey       = "freeGenerationsUsed"

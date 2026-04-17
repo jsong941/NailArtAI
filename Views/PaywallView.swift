@@ -21,7 +21,7 @@ struct PaywallView: View {
         var generations: String {
             switch self {
             case .starter: return "5 generations"
-            case .value:   return "20 generations"
+            case .value:   return "15 generations"
             case .pro:     return "40 generations/mo"
             }
         }
