@@ -21,14 +21,14 @@ struct PaywallView: View {
         var generations: String {
             switch self {
             case .starter: return "5 generations"
-            case .value:   return "10 generations"
+            case .value:   return "20 generations"
             case .pro:     return "40 generations/mo"
             }
         }
 
         var fallbackPrice: String {
             switch self {
-            case .starter: return "$1.99"
+            case .starter: return "$0.99"
             case .value:   return "$2.99"
             case .pro:     return "$9.99"
             }
