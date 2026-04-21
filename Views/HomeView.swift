@@ -3,8 +3,8 @@ import SwiftUI
 struct HomeView: View {
     @State private var showImagePicker = false
     @State private var showCamera = false
-    @State private var selectedImage: UIImage?
-    @State private var navigateToResults = false
+    @State private var rawImage: UIImage?
+    @State private var navigateToCrop = false
     @State private var showHelp = false
     @State private var animateIn = false
 
@@ -115,19 +115,19 @@ struct HomeView: View {
                     Spacer().frame(height: 52)
                 }
             }
-            .navigationDestination(isPresented: $navigateToResults) {
-                if let image = selectedImage {
-                    ColorSelectionView(image: image)
+            .navigationDestination(isPresented: $navigateToCrop) {
+                if let raw = rawImage {
+                    CropImageView(image: raw)
                 }
             }
             .sheet(isPresented: $showImagePicker) {
-                ImagePickerView(image: $selectedImage, sourceType: .photoLibrary) {
-                    navigateToResults = true
+                ImagePickerView(image: $rawImage, sourceType: .photoLibrary) {
+                    navigateToCrop = true
                 }
             }
             .sheet(isPresented: $showCamera) {
-                ImagePickerView(image: $selectedImage, sourceType: .camera) {
-                    navigateToResults = true
+                ImagePickerView(image: $rawImage, sourceType: .camera) {
+                    navigateToCrop = true
                 }
             }
             .sheet(isPresented: $showHelp) {
