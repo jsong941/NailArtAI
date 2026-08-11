@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import Photos
+import Combine
 
 // MARK: - Design Detail View
 
@@ -21,7 +22,7 @@ struct DesignDetailView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FCFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 24) {
@@ -31,10 +32,10 @@ struct DesignDetailView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(suggestion.emoji + " " + suggestion.title)
                                 .font(.custom("CormorantGaramond-SemiBold", size: 28))
-                                .foregroundColor(Color(hex: "2C2925"))
+                                .foregroundColor(Color.textPrimary)
                             Text(suggestion.description)
-                                .font(.custom("CormorantGaramond-Italic", size: 17))
-                                .foregroundColor(Color(hex: "8E8A83"))
+                                .font(.system(size: 14))
+                                .foregroundColor(Color.textSecondary)
                                 .lineSpacing(4)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -64,14 +65,14 @@ struct DesignDetailView: View {
                                 Image(systemName: "wand.and.sparkles")
                                     .font(.system(size: 16, weight: .light))
                                 Text("Generate AI Nail Art")
-                                    .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                    .font(.system(size: 15, weight: .semibold))
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 58)
-                            .background(Color(hex: "2C2925"))
+                            .background(Color.textPrimary)
                             .clipShape(RoundedRectangle(cornerRadius: 18))
-                            .shadow(color: Color(hex: "2C2925").opacity(0.25), radius: 10, x: 0, y: 4)
+                            .shadow(color: Color.textPrimary.opacity(0.25), radius: 10, x: 0, y: 4)
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, 24)
@@ -91,7 +92,7 @@ struct DesignDetailView: View {
                     Button(action: toggleFavorite) {
                         Image(systemName: isFavorited ? "heart.fill" : "heart")
                             .font(.system(size: 15, weight: .light))
-                            .foregroundColor(isFavorited ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
+                            .foregroundColor(isFavorited ? Color.appAccent : Color.textPrimary)
                     }
                 }
             }
@@ -136,6 +137,17 @@ struct GenerateDesignView: View {
     @State private var isSaving = false
     @State private var animateIn = false
     @State private var showPaywall = false
+    @State private var loadingStage = 0
+    @State private var pulseIcon = false
+
+    private let loadingMessages = [
+        "Studying your photo…",
+        "Mixing your palette…",
+        "Painting each nail…",
+        "Perfecting the details…",
+        "Adding the final gloss…"
+    ]
+    private let loadingTimer = Timer.publish(every: 8, on: .main, in: .common).autoconnect()
 
     private var emphasizedColors: [NailColor] {
         colors.filter { emphasizedColorIDs.contains($0.id) }
@@ -192,7 +204,7 @@ struct GenerateDesignView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FCFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 20) {
@@ -208,38 +220,26 @@ struct GenerateDesignView: View {
                             .padding(.top, 16)
                             .transition(.opacity.combined(with: .scale(scale: 0.97)))
                     } else if isGenerating {
-                        VStack(spacing: 16) {
-                            ProgressView()
-                                .tint(Color(hex: "C9A84C"))
-                                .scaleEffect(1.2)
-                            Text("Creating your design...")
-                                .font(.custom("CormorantGaramond-Italic", size: 16))
-                                .foregroundColor(Color(hex: "8E8A83"))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 260)
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .shadow(color: Color.black.opacity(0.05), radius: 12, x: 0, y: 4)
-                        .padding(.horizontal, 24)
-                        .padding(.top, 16)
+                        generationProgressCard
+                            .padding(.horizontal, 24)
+                            .padding(.top, 16)
                     } else if generationError {
                         VStack(spacing: 14) {
                             Image(systemName: "exclamationmark.circle")
                                 .font(.system(size: 32, weight: .light))
-                                .foregroundColor(Color(hex: "C9A84C"))
+                                .foregroundColor(Color.appAccent)
                             Text(generationErrorMessage ?? "Couldn't generate your design")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 17))
-                                .foregroundColor(Color(hex: "2C2925"))
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(Color.textPrimary)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 24)
                             Button(action: generateImage) {
                                 Text("Try Again")
-                                    .font(.custom("CormorantGaramond-SemiBold", size: 15))
+                                    .font(.system(size: 12, weight: .semibold))
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 28)
                                     .padding(.vertical, 10)
-                                    .background(Color(hex: "2C2925"))
+                                    .background(Color.textPrimary)
                                     .clipShape(Capsule())
                             }
                         }
@@ -266,31 +266,31 @@ struct GenerateDesignView: View {
                         HStack(spacing: 10) {
                             Image(systemName: isOut ? "exclamationmark.circle.fill" : "info.circle.fill")
                                 .font(.system(size: 15))
-                                .foregroundColor(isOut ? .red : isLow ? Color(hex: "C9A84C") : Color(hex: "8E8A83"))
+                                .foregroundColor(isOut ? .red : isLow ? Color.appAccent : Color.textSecondary)
                             Text(isOut
                                  ? "No generations left — upgrade to keep creating"
                                  : "\(remaining) free generation\(remaining == 1 ? "" : "s") left")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 14))
-                                .foregroundColor(isOut ? .red : isLow ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(isOut ? .red : isLow ? Color.appAccent : Color.textPrimary)
                             Spacer()
                             if !isOut {
                                 Button {
                                     showPaywall = true
                                 } label: {
                                     Text("Upgrade")
-                                        .font(.custom("CormorantGaramond-SemiBold", size: 13))
+                                        .font(.system(size: 11, weight: .semibold))
                                         .foregroundColor(.white)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 5)
-                                        .background(Color(hex: "C9A84C"))
+                                        .background(Color.appAccent)
                                         .clipShape(Capsule())
                                 }
                             }
                         }
                         .padding(12)
-                        .background(isOut ? Color.red.opacity(0.07) : isLow ? Color(hex: "C9A84C").opacity(0.08) : Color(hex: "F5F5F5"))
+                        .background(isOut ? Color.red.opacity(0.07) : isLow ? Color.appAccent.opacity(0.08) : Color.appBackground)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(isOut ? Color.red.opacity(0.2) : isLow ? Color(hex: "C9A84C").opacity(0.25) : Color.clear, lineWidth: 1))
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(isOut ? Color.red.opacity(0.2) : isLow ? Color.appAccent.opacity(0.25) : Color.clear, lineWidth: 1))
                         .padding(.horizontal, 24)
                         .opacity(animateIn ? 1 : 0)
                         .animation(.easeOut(duration: 0.4).delay(0.22), value: animateIn)
@@ -308,14 +308,14 @@ struct GenerateDesignView: View {
                             Text(subscriptionManager.generationsRemaining == 0 && !subscriptionManager.isSubscribed
                                  ? "Keep Designing!"
                                  : generatedImage == nil ? "Generate" : "Regenerate")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                .font(.system(size: 15, weight: .semibold))
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 58)
-                        .background(isGenerating ? Color(hex: "C9A84C").opacity(0.6) : Color(hex: "C9A84C"))
+                        .background(isGenerating ? Color.appAccent.opacity(0.6) : Color.appAccent)
                         .clipShape(RoundedRectangle(cornerRadius: 18))
-                        .shadow(color: Color(hex: "C9A84C").opacity(0.3), radius: 10, x: 0, y: 4)
+                        .shadow(color: Color.appAccent.opacity(0.3), radius: 10, x: 0, y: 4)
                     }
                     .disabled(isGenerating)
                     .padding(.horizontal, 24)
@@ -334,6 +334,12 @@ struct GenerateDesignView: View {
         .navigationTitle("Generate Nail Art")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { animateIn = true }
+        .onReceive(loadingTimer) { _ in
+            guard isGenerating else { return }
+            withAnimation(.easeInOut(duration: 0.4)) {
+                loadingStage = min(loadingStage + 1, loadingMessages.count - 1)
+            }
+        }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
                 .environmentObject(subscriptionManager)
@@ -360,6 +366,54 @@ struct GenerateDesignView: View {
         }
     }
 
+    // MARK: - Generation Progress Card
+
+    @ViewBuilder
+    private var generationProgressCard: some View {
+        VStack(spacing: 20) {
+            ZStack {
+                Circle()
+                    .fill(Color.accentSoft)
+                    .frame(width: 72, height: 72)
+                    .scaleEffect(pulseIcon ? 1.12 : 0.94)
+                Image(systemName: "wand.and.sparkles")
+                    .font(.system(size: 26, weight: .light))
+                    .foregroundColor(Color.appAccent)
+                    .rotationEffect(.degrees(pulseIcon ? 8 : -8))
+            }
+            .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: pulseIcon)
+
+            VStack(spacing: 8) {
+                Text(loadingMessages[loadingStage])
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(Color.textPrimary)
+                    .id(loadingStage)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+
+                Text("This can take up to a minute")
+                    .font(.system(size: 12))
+                    .foregroundColor(Color.textSecondary)
+            }
+
+            HStack(spacing: 6) {
+                ForEach(loadingMessages.indices, id: \.self) { i in
+                    Capsule()
+                        .fill(i <= loadingStage ? Color.appAccent : Color.divider)
+                        .frame(width: i == loadingStage ? 18 : 6, height: 6)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: loadingStage)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .aspectRatio(1, contentMode: .fit)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .shadow(color: Color.black.opacity(0.05), radius: 12, x: 0, y: 4)
+        .shimmer()
+        .onAppear { pulseIcon = true }
+        .onDisappear { pulseIcon = false }
+    }
+
     // MARK: - Add Colors Section
 
     @ViewBuilder
@@ -368,21 +422,21 @@ struct GenerateDesignView: View {
             HStack(spacing: 7) {
                 Image(systemName: "paintpalette")
                     .font(.system(size: 13, weight: .light))
-                    .foregroundColor(Color(hex: "C9A84C"))
+                    .foregroundColor(Color.appAccent)
                 Text("Add Colors")
-                    .font(.custom("CormorantGaramond-Bold", size: 20))
-                    .foregroundColor(Color(hex: "2C2925"))
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundColor(Color.textPrimary)
                 Spacer()
                 if !emphasizedColorIDs.isEmpty {
                     Text("\(emphasizedColorIDs.count) selected")
-                        .font(.custom("CormorantGaramond-Italic", size: 13))
-                        .foregroundColor(Color(hex: "C9A84C"))
+                        .font(.system(size: 11))
+                        .foregroundColor(Color.appAccent)
                 }
             }
 
             Text("Select colors from your photo to emphasize in the design.")
-                .font(.custom("CormorantGaramond-Italic", size: 16))
-                .foregroundColor(Color(hex: "8E8A83"))
+                .font(.system(size: 13))
+                .foregroundColor(Color.textSecondary)
 
             HStack(alignment: .top, spacing: 14) {
                 ForEach(colors) { color in
@@ -403,7 +457,7 @@ struct GenerateDesignView: View {
                                     .shadow(color: color.swiftUIColor.opacity(0.35), radius: 5, x: 0, y: 2)
                                     .overlay(
                                         Circle().stroke(
-                                            isSelected ? Color(hex: "C9A84C") : Color.white,
+                                            isSelected ? Color.appAccent : Color.white,
                                             lineWidth: isSelected ? 3 : 2
                                         )
                                     )
@@ -414,8 +468,8 @@ struct GenerateDesignView: View {
                                 }
                             }
                             Text(color.name)
-                                .font(.custom("CormorantGaramond-Regular", size: 13))
-                                .foregroundColor(isSelected ? Color(hex: "C9A84C") : Color(hex: "8E8A83"))
+                                .font(.system(size: 11))
+                                .foregroundColor(isSelected ? Color.appAccent : Color.textSecondary)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.center)
                                 .minimumScaleFactor(0.8)
@@ -441,25 +495,25 @@ struct GenerateDesignView: View {
             HStack(spacing: 7) {
                 Image(systemName: "wand.and.stars")
                     .font(.system(size: 13, weight: .light))
-                    .foregroundColor(Color(hex: "C9A84C"))
+                    .foregroundColor(Color.appAccent)
                 Text("Design Add-ons")
-                    .font(.custom("CormorantGaramond-Bold", size: 20))
-                    .foregroundColor(Color(hex: "2C2925"))
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundColor(Color.textPrimary)
                 Spacer()
                 if selectedAddOn != nil {
                     Button {
                         selectAddOn(selectedAddOn!)
                     } label: {
                         Text("Clear")
-                            .font(.custom("CormorantGaramond-Italic", size: 13))
-                            .foregroundColor(Color(hex: "8E8A83"))
+                            .font(.system(size: 11))
+                            .foregroundColor(Color.textSecondary)
                     }
                 }
             }
 
             Text("Choose an optional enhancement for your design.")
-                .font(.custom("CormorantGaramond-Italic", size: 16))
-                .foregroundColor(Color(hex: "8E8A83"))
+                .font(.system(size: 13))
+                .foregroundColor(Color.textSecondary)
 
             VStack(spacing: 8) {
                 ForEach(DesignAddOn.allCases, id: \.rawValue) { addOn in
@@ -484,27 +538,27 @@ struct GenerateDesignView: View {
                         .frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(addOn.displayName)
-                            .font(.custom("CormorantGaramond-SemiBold", size: 16))
-                            .foregroundColor(isSelected ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(isSelected ? Color.appAccent : Color.textPrimary)
                         Text(addOn.description)
-                            .font(.custom("CormorantGaramond-Italic", size: 13))
-                            .foregroundColor(Color(hex: "8E8A83"))
+                            .font(.system(size: 11))
+                            .foregroundColor(Color.textSecondary)
                     }
                     Spacer()
                     if addOn.hasSubmenu {
                         Image(systemName: isSelected ? "chevron.up" : "chevron.down")
                             .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(Color(hex: "C9A84C"))
+                            .foregroundColor(Color.appAccent)
                     } else if isSelected {
                         Image(systemName: "checkmark")
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(Color(hex: "C9A84C"))
+                            .foregroundColor(Color.appAccent)
                     }
                 }
                 .padding(14)
-                .background(isSelected ? Color(hex: "C9A84C").opacity(0.06) : Color(hex: "F9F7F4"))
+                .background(isSelected ? Color.appAccent.opacity(0.06) : Color.appBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(isSelected ? Color(hex: "C9A84C") : Color.clear, lineWidth: 1.5))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(isSelected ? Color.appAccent : Color.clear, lineWidth: 1.5))
             }
             .buttonStyle(.plain)
             .animation(.easeInOut(duration: 0.18), value: isSelected)
@@ -524,8 +578,8 @@ struct GenerateDesignView: View {
         case .frenchTip:
             VStack(alignment: .leading, spacing: 8) {
                 Text("Tip color — nude base by default")
-                    .font(.custom("CormorantGaramond-Italic", size: 13))
-                    .foregroundColor(Color(hex: "8E8A83"))
+                    .font(.system(size: 11))
+                    .foregroundColor(Color.textSecondary)
                 HStack(alignment: .top, spacing: 14) {
                     ForEach(colors) { color in
                         let isChosen = frenchTipColor?.id == color.id
@@ -539,7 +593,7 @@ struct GenerateDesignView: View {
                                         .fill(color.swiftUIColor)
                                         .frame(width: 40, height: 40)
                                         .shadow(color: color.swiftUIColor.opacity(0.35), radius: 4, x: 0, y: 2)
-                                        .overlay(Circle().stroke(isChosen ? Color(hex: "C9A84C") : Color.white, lineWidth: isChosen ? 3 : 2))
+                                        .overlay(Circle().stroke(isChosen ? Color.appAccent : Color.white, lineWidth: isChosen ? 3 : 2))
                                     if isChosen {
                                         Image(systemName: "checkmark")
                                             .font(.system(size: 11, weight: .bold))
@@ -547,8 +601,8 @@ struct GenerateDesignView: View {
                                     }
                                 }
                                 Text(color.name)
-                                    .font(.custom("CormorantGaramond-Regular", size: 10))
-                                    .foregroundColor(isChosen ? Color(hex: "C9A84C") : Color(hex: "8E8A83"))
+                                    .font(.system(size: 11))
+                                    .foregroundColor(isChosen ? Color.appAccent : Color.textSecondary)
                                     .lineLimit(2)
                                     .multilineTextAlignment(.center)
                                     .frame(width: 48)
@@ -572,17 +626,17 @@ struct GenerateDesignView: View {
                     } label: {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(style.displayName)
-                                .font(.custom("CormorantGaramond-SemiBold", size: 14))
-                                .foregroundColor(isChosen ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(isChosen ? Color.appAccent : Color.textPrimary)
                             Text(style.description)
-                                .font(.custom("CormorantGaramond-Italic", size: 12))
-                                .foregroundColor(Color(hex: "8E8A83"))
+                                .font(.system(size: 11))
+                                .foregroundColor(Color.textSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(12)
-                        .background(isChosen ? Color(hex: "C9A84C").opacity(0.08) : Color.white)
+                        .background(isChosen ? Color.appAccent.opacity(0.08) : Color.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(isChosen ? Color(hex: "C9A84C") : Color(hex: "E8E4DF"), lineWidth: 1.5))
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(isChosen ? Color.appAccent : Color.divider, lineWidth: 1.5))
                     }
                     .buttonStyle(.plain)
                     .animation(.easeInOut(duration: 0.15), value: isChosen)
@@ -601,13 +655,13 @@ struct GenerateDesignView: View {
                         finishStyle = isChosen ? nil : style
                     } label: {
                         Text(style.displayName)
-                            .font(.custom("CormorantGaramond-SemiBold", size: 13))
-                            .foregroundColor(isChosen ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(isChosen ? Color.appAccent : Color.textPrimary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
-                            .background(isChosen ? Color(hex: "C9A84C").opacity(0.08) : Color.white)
+                            .background(isChosen ? Color.appAccent.opacity(0.08) : Color.white)
                             .clipShape(Capsule())
-                            .overlay(Capsule().stroke(isChosen ? Color(hex: "C9A84C") : Color(hex: "E8E4DF"), lineWidth: 1.5))
+                            .overlay(Capsule().stroke(isChosen ? Color.appAccent : Color.divider, lineWidth: 1.5))
                     }
                     .buttonStyle(.plain)
                     .animation(.easeInOut(duration: 0.15), value: isChosen)
@@ -631,15 +685,15 @@ struct GenerateDesignView: View {
                 Button { saveDesign() } label: {
                     HStack(spacing: 8) {
                         if isSaving {
-                            ProgressView().tint(Color(hex: "2C2925")).scaleEffect(0.8)
+                            ProgressView().tint(Color.textPrimary).scaleEffect(0.8)
                         } else {
                             Image(systemName: "square.and.arrow.down")
                                 .font(.system(size: 15, weight: .light))
-                                .foregroundColor(Color(hex: "C9A84C"))
+                                .foregroundColor(Color.appAccent)
                         }
                         Text("Save Design")
-                            .font(.custom("CormorantGaramond-SemiBold", size: 17))
-                            .foregroundColor(Color(hex: "2C2925"))
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(Color.textPrimary)
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 58)
@@ -653,11 +707,11 @@ struct GenerateDesignView: View {
                 Button { saveFavorite() } label: {
                     Image(systemName: isFavorited ? "heart.fill" : "heart")
                         .font(.system(size: 17, weight: .light))
-                        .foregroundColor(isFavorited ? Color(hex: "C9A84C") : .white)
+                        .foregroundColor(isFavorited ? Color.appAccent : .white)
                         .frame(width: 58, height: 58)
-                        .background(isFavorited ? Color.white : Color(hex: "2C2925"))
+                        .background(isFavorited ? Color.white : Color.textPrimary)
                         .clipShape(RoundedRectangle(cornerRadius: 18))
-                        .overlay(RoundedRectangle(cornerRadius: 18).stroke(isFavorited ? Color(hex: "C9A84C").opacity(0.3) : Color.clear, lineWidth: 1))
+                        .overlay(RoundedRectangle(cornerRadius: 18).stroke(isFavorited ? Color.appAccent.opacity(0.3) : Color.clear, lineWidth: 1))
                 }
                 .disabled(isFavorited)
 
@@ -666,7 +720,7 @@ struct GenerateDesignView: View {
                         .font(.system(size: 17, weight: .light))
                         .foregroundColor(.white)
                         .frame(width: 58, height: 58)
-                        .background(Color(hex: "2C2925"))
+                        .background(Color.textPrimary)
                         .clipShape(RoundedRectangle(cornerRadius: 18))
                 }
             }
@@ -674,7 +728,7 @@ struct GenerateDesignView: View {
             .padding(.bottom, 36)
             .background(
                 LinearGradient(
-                    colors: [Color(hex: "FCFAF8").opacity(0), Color(hex: "FCFAF8")],
+                    colors: [Color.appBackground.opacity(0), Color.appBackground],
                     startPoint: .top, endPoint: .bottom
                 )
                 .frame(height: 120).ignoresSafeArea()
@@ -694,15 +748,20 @@ struct GenerateDesignView: View {
         isGenerating = true
         generationError = false
         generationErrorMessage = nil
+        loadingStage = 0
         Task {
             do {
-                generatedImage = try await GeminiService().generatePhotoInspiredImage(
+                let image = try await GeminiService().generatePhotoInspiredImage(
                     from: sourceImage,
                     colors: colors,
                     shape: selectedShape,
                     emphasizedColors: emphasizedColors,
                     addOnNote: effectiveAddOnNote
                 )
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.85)) {
+                    generatedImage = image
+                }
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
                 subscriptionManager.recordGeneration()
                 isFavorited = false
             } catch {
@@ -775,19 +834,19 @@ struct ShopThisLookCard: View {
             HStack(spacing: 7) {
                 Image(systemName: "bag")
                     .font(.system(size: 13, weight: .light))
-                    .foregroundColor(Color(hex: "C9A84C"))
+                    .foregroundColor(Color.appAccent)
                 Text("Shop This Look")
-                    .font(.custom("CormorantGaramond-Bold", size: 20))
-                    .foregroundColor(Color(hex: "2C2925"))
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundColor(Color.textPrimary)
                 Spacer()
                 Text("via Amazon")
-                    .font(.custom("CormorantGaramond-Italic", size: 12))
-                    .foregroundColor(Color(hex: "8E8A83"))
+                    .font(.system(size: 11))
+                    .foregroundColor(Color.textSecondary)
             }
 
             Text("Closest matching polishes for your colors. Availability may vary.")
-                .font(.custom("CormorantGaramond-Italic", size: 14))
-                .foregroundColor(Color(hex: "8E8A83"))
+                .font(.system(size: 11))
+                .foregroundColor(Color.textSecondary)
 
             ForEach(matches, id: \.0.id) { color, products in
                 VStack(alignment: .leading, spacing: 8) {
@@ -798,8 +857,8 @@ struct ShopThisLookCard: View {
                             .overlay(Circle().stroke(Color.white, lineWidth: 1.5))
                             .shadow(color: color.swiftUIColor.opacity(0.3), radius: 3, x: 0, y: 1)
                         Text(color.name)
-                            .font(.custom("CormorantGaramond-SemiBold", size: 14))
-                            .foregroundColor(Color(hex: "2C2925"))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(Color.textPrimary)
                     }
 
                     VStack(spacing: 8) {
@@ -813,30 +872,30 @@ struct ShopThisLookCard: View {
 
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(product.brand)
-                                            .font(.custom("CormorantGaramond-Regular", size: 11))
-                                            .foregroundColor(Color(hex: "8E8A83"))
+                                            .font(.system(size: 11))
+                                            .foregroundColor(Color.textSecondary)
                                         Text(product.name)
-                                            .font(.custom("CormorantGaramond-SemiBold", size: 15))
-                                            .foregroundColor(Color(hex: "2C2925"))
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundColor(Color.textPrimary)
                                     }
 
                                     Spacer()
 
                                     HStack(spacing: 4) {
                                         Text("Buy")
-                                            .font(.custom("CormorantGaramond-SemiBold", size: 13))
+                                            .font(.system(size: 11, weight: .semibold))
                                         Image(systemName: "arrow.up.right")
                                             .font(.system(size: 10, weight: .medium))
                                     }
-                                    .foregroundColor(Color(hex: "C9A84C"))
+                                    .foregroundColor(Color.appAccent)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
-                                    .background(Color(hex: "C9A84C").opacity(0.08))
+                                    .background(Color.appAccent.opacity(0.08))
                                     .clipShape(Capsule())
-                                    .overlay(Capsule().stroke(Color(hex: "C9A84C").opacity(0.3), lineWidth: 1))
+                                    .overlay(Capsule().stroke(Color.appAccent.opacity(0.3), lineWidth: 1))
                                 }
                                 .padding(12)
-                                .background(Color(hex: "F9F7F4"))
+                                .background(Color.appBackground)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                             }
                         }
@@ -850,7 +909,7 @@ struct ShopThisLookCard: View {
 
             Text("As an Amazon Associate I earn from qualifying purchases.")
                 .font(.system(size: 10))
-                .foregroundColor(Color(hex: "8E8A83").opacity(0.7))
+                .foregroundColor(Color.textSecondary.opacity(0.7))
                 .padding(.top, 4)
         }
         .padding(20)

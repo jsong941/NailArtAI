@@ -31,3 +31,7 @@ build/
 
 # Secrets — never commit API keys
 Secrets.swift
+
+# Claude Code local config
+.claude/
+.mcp.json

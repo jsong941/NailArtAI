@@ -24,7 +24,7 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FAFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Skip button
@@ -35,8 +35,8 @@ struct OnboardingView: View {
                             withAnimation(.easeInOut(duration: 0.35)) { hasSeenOnboarding = true }
                         } label: {
                             Text("Skip")
-                                .font(.custom("CormorantGaramond-Italic", size: 16))
-                                .foregroundColor(Color(hex: "8E8A83"))
+                                .font(.system(size: 13))
+                                .foregroundColor(Color.textSecondary)
                                 .padding(.horizontal, 24)
                                 .padding(.top, 16)
                         }
@@ -57,7 +57,7 @@ struct OnboardingView: View {
                 HStack(spacing: 8) {
                     ForEach(pages.indices, id: \.self) { i in
                         Capsule()
-                            .fill(i == currentPage ? Color(hex: "C9A84C") : Color(hex: "E5E5EA"))
+                            .fill(i == currentPage ? Color.appAccent : Color.divider)
                             .frame(width: i == currentPage ? 24 : 8, height: 8)
                             .animation(.spring(response: 0.35, dampingFraction: 0.7), value: currentPage)
                     }
@@ -74,19 +74,13 @@ struct OnboardingView: View {
                     }
                 } label: {
                     Text(currentPage < pages.count - 1 ? "Next" : "Get Started")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
-                        .background(
-                            LinearGradient(
-                                colors: [Color(hex: "C9A84C"), Color(hex: "B8860B")],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .background(Color.appAccent)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: Color(hex: "C9A84C").opacity(0.3), radius: 10, x: 0, y: 4)
+                        .shadow(color: Color.appAccent.opacity(0.3), radius: 10, x: 0, y: 4)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 52)
@@ -116,14 +110,14 @@ struct OnboardingPageView: View {
 
             ZStack {
                 Circle()
-                    .fill(Color(hex: "C9A84C").opacity(0.06))
+                    .fill(Color.appAccent.opacity(0.06))
                     .frame(width: 170, height: 170)
                 Circle()
-                    .fill(Color(hex: "C9A84C").opacity(0.1))
+                    .fill(Color.appAccent.opacity(0.1))
                     .frame(width: 130, height: 130)
                 Image(systemName: page.icon)
                     .font(.system(size: 52, weight: .light))
-                    .foregroundColor(Color(hex: "C9A84C"))
+                    .foregroundColor(Color.appAccent)
             }
             .scaleEffect(animateIn ? 1 : 0.75)
             .opacity(animateIn ? 1 : 0)
@@ -133,13 +127,13 @@ struct OnboardingPageView: View {
             VStack(spacing: 14) {
                 Text(page.title)
                     .font(.custom("CormorantGaramond-Bold", size: 40))
-                    .foregroundColor(Color(hex: "1C1C1E"))
+                    .foregroundColor(Color.textPrimary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(2)
 
                 Text(page.description)
-                    .font(.custom("CormorantGaramond-Italic", size: 20))
-                    .foregroundColor(Color(hex: "8E8E93"))
+                    .font(.system(size: 17))
+                    .foregroundColor(Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(5)
                     .padding(.horizontal, 36)

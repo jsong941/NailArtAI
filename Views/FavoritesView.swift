@@ -9,7 +9,7 @@ struct FavoritesView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FAFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             if favorites.isEmpty {
                 EmptyFavoritesView()
@@ -85,13 +85,13 @@ struct FavoriteDesignRow: View {
             Text(favorite.emoji)
                 .font(.system(size: 28))
                 .frame(width: 50, height: 50)
-                .background(Color(hex: "F5F0E8"))
+                .background(Color.accentSoft)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(favorite.title)
-                    .font(.custom("CormorantGaramond-SemiBold", size: 17))
-                    .foregroundColor(Color(hex: "1C1C1E"))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(Color.textPrimary)
 
                 HStack(spacing: -4) {
                     ForEach(Array(favorite.colors.prefix(3).enumerated()), id: \.offset) { index, color in
@@ -121,7 +121,7 @@ struct GeneratedFavoriteDetailView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FCFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 20) {
@@ -144,10 +144,10 @@ struct GeneratedFavoriteDetailView: View {
                             HStack(spacing: 8) {
                                 Image(systemName: "square.and.arrow.down")
                                     .font(.system(size: 15, weight: .light))
-                                    .foregroundColor(Color(hex: "C9A84C"))
+                                    .foregroundColor(Color.appAccent)
                                 Text("Save to Photos")
-                                    .font(.custom("CormorantGaramond-SemiBold", size: 17))
-                                    .foregroundColor(Color(hex: "2C2925"))
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(Color.textPrimary)
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 58)
@@ -164,7 +164,7 @@ struct GeneratedFavoriteDetailView: View {
                                 .font(.system(size: 17, weight: .light))
                                 .foregroundColor(.white)
                                 .frame(width: 58, height: 58)
-                                .background(Color(hex: "2C2925"))
+                                .background(Color.textPrimary)
                                 .clipShape(RoundedRectangle(cornerRadius: 18))
                         }
                     }
@@ -199,15 +199,15 @@ struct EmptyFavoritesView: View {
         VStack(spacing: 16) {
             Image(systemName: "heart")
                 .font(.system(size: 44, weight: .light))
-                .foregroundColor(Color(hex: "C9A84C").opacity(0.5))
+                .foregroundColor(Color.appAccent.opacity(0.5))
 
             Text("No Favorites Yet")
                 .font(.custom("CormorantGaramond-Bold", size: 24))
-                .foregroundColor(Color(hex: "1C1C1E"))
+                .foregroundColor(Color.textPrimary)
 
             Text("Tap the heart on any design\nto save it here.")
-                .font(.custom("CormorantGaramond-Italic", size: 16))
-                .foregroundColor(Color(hex: "8E8E93"))
+                .font(.system(size: 13))
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
         }

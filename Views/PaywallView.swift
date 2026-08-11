@@ -61,28 +61,28 @@ struct PaywallView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FCFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Header
                 VStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(Color(hex: "C9A84C").opacity(0.12))
+                            .fill(Color.appAccent.opacity(0.12))
                             .frame(width: 72, height: 72)
                         Image(systemName: "sparkles")
                             .font(.system(size: 28, weight: .light))
-                            .foregroundColor(Color(hex: "C9A84C"))
+                            .foregroundColor(Color.appAccent)
                     }
                     .padding(.top, 40)
 
                     Text("Get More Designs")
                         .font(.custom("CormorantGaramond-SemiBold", size: 30))
-                        .foregroundColor(Color(hex: "2C2925"))
+                        .foregroundColor(Color.textPrimary)
 
                     Text("You've used your free generations.\nChoose a plan to keep creating.")
-                        .font(.custom("CormorantGaramond-Italic", size: 16))
-                        .foregroundColor(Color(hex: "8E8A83"))
+                        .font(.system(size: 13))
+                        .foregroundColor(Color.textSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                 }
@@ -124,9 +124,9 @@ struct PaywallView: View {
                                 let price = subscriptionManager.product(for: selectedTier.productID)?.displayPrice ?? selectedTier.fallbackPrice
                                 VStack(spacing: 2) {
                                     Text(selectedTier == .pro ? "Subscribe — \(price)/month" : "Buy \(selectedTier.title) — \(price)")
-                                        .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                        .font(.system(size: 15, weight: .semibold))
                                     Text(selectedTier.detail)
-                                        .font(.custom("CormorantGaramond-Italic", size: 12))
+                                        .font(.system(size: 11))
                                         .opacity(0.8)
                                 }
                             }
@@ -135,10 +135,10 @@ struct PaywallView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 64)
                         .background(subscriptionManager.isPurchasing
-                            ? Color(hex: "C9A84C").opacity(0.6)
-                            : Color(hex: "C9A84C"))
+                            ? Color.appAccent.opacity(0.6)
+                            : Color.appAccent)
                         .clipShape(RoundedRectangle(cornerRadius: 18))
-                        .shadow(color: Color(hex: "C9A84C").opacity(0.3), radius: 10, x: 0, y: 4)
+                        .shadow(color: Color.appAccent.opacity(0.3), radius: 10, x: 0, y: 4)
                     }
                     .disabled(subscriptionManager.isPurchasing)
 
@@ -146,13 +146,13 @@ struct PaywallView: View {
                         Task { await subscriptionManager.restorePurchases() }
                     } label: {
                         Text("Restore Purchases")
-                            .font(.custom("CormorantGaramond-Regular", size: 14))
-                            .foregroundColor(Color(hex: "8E8A83"))
+                            .font(.system(size: 11))
+                            .foregroundColor(Color.textSecondary)
                     }
 
                     Text("Subscription auto-renews monthly. Manage or cancel in your Apple ID settings.")
                         .font(.system(size: 10))
-                        .foregroundColor(Color(hex: "8E8A83").opacity(0.7))
+                        .foregroundColor(Color.textSecondary.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
 
@@ -162,7 +162,7 @@ struct PaywallView: View {
                         Link("Terms of Use", destination: URL(string: "https://purrfect-allium-817.notion.site/Nomi-Nail-Terms-of-Use-33e61c68297480c08456c009545df66a")!)
                     }
                     .font(.system(size: 11))
-                    .foregroundColor(Color(hex: "8E8A83"))
+                    .foregroundColor(Color.textSecondary)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
@@ -177,9 +177,9 @@ struct PaywallView: View {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(Color(hex: "8E8A83"))
+                            .foregroundColor(Color.textSecondary)
                             .frame(width: 32, height: 32)
-                            .background(Color(hex: "E8E4DF"))
+                            .background(Color.divider)
                             .clipShape(Circle())
                     }
                     .padding(.top, 16)
@@ -207,11 +207,11 @@ private struct TierCard: View {
             // Radio button
             ZStack {
                 Circle()
-                    .stroke(isSelected ? Color(hex: "C9A84C") : Color(hex: "D1D1D6"), lineWidth: 2)
+                    .stroke(isSelected ? Color.appAccent : Color.divider, lineWidth: 2)
                     .frame(width: 22, height: 22)
                 if isSelected {
                     Circle()
-                        .fill(Color(hex: "C9A84C"))
+                        .fill(Color.appAccent)
                         .frame(width: 12, height: 12)
                 }
             }
@@ -219,35 +219,35 @@ private struct TierCard: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
                     Text(tier.title)
-                        .font(.custom("CormorantGaramond-SemiBold", size: 16))
-                        .foregroundColor(Color(hex: "2C2925"))
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(Color.textPrimary)
                     if let badge = tier.badge {
                         Text(badge)
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundColor(.white)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 3)
-                            .background(Color(hex: "C9A84C"))
+                            .background(Color.appAccent)
                             .clipShape(Capsule())
                     }
                 }
                 Text(tier.generations)
-                    .font(.custom("CormorantGaramond-Italic", size: 13))
-                    .foregroundColor(Color(hex: "8E8A83"))
+                    .font(.system(size: 11))
+                    .foregroundColor(Color.textSecondary)
             }
 
             Spacer()
 
             Text(price)
-                .font(.custom("CormorantGaramond-SemiBold", size: 18))
-                .foregroundColor(isSelected ? Color(hex: "C9A84C") : Color(hex: "2C2925"))
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(isSelected ? Color.appAccent : Color.textPrimary)
         }
         .padding(16)
-        .background(isSelected ? Color(hex: "C9A84C").opacity(0.06) : Color.white)
+        .background(isSelected ? Color.appAccent.opacity(0.06) : Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(isSelected ? Color(hex: "C9A84C") : Color(hex: "E8E4DF"), lineWidth: isSelected ? 2 : 1)
+                .stroke(isSelected ? Color.appAccent : Color.divider, lineWidth: isSelected ? 2 : 1)
         )
         .shadow(color: Color.black.opacity(isSelected ? 0.06 : 0.03), radius: 8, x: 0, y: 2)
         .animation(.easeInOut(duration: 0.15), value: isSelected)

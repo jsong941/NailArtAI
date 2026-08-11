@@ -10,7 +10,7 @@ struct CropImageView: View {
     @State private var proceed = false
 
     // Layout
-    @State private var containerSize: CGSize = UIScreen.main.bounds.size
+    @State private var containerSize: CGSize = .zero
     @State private var cropRect: CGRect = .zero
 
     // One GestureState per corner + move (each auto-resets when finger lifts)
@@ -182,7 +182,7 @@ struct CropImageView: View {
             VStack(spacing: 0) {
                 ZStack {
                     Text("Crop Photo")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 20))
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
 
@@ -193,7 +193,7 @@ struct CropImageView: View {
                         Spacer()
                         Button("Use Photo") { performCrop() }
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(hex: "C9A84C"))
+                            .foregroundColor(Color.appAccent)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -203,7 +203,7 @@ struct CropImageView: View {
 
                 VStack(spacing: 6) {
                     Text("Crop to the area you want to design")
-                        .font(.custom("CormorantGaramond-Italic", size: 15))
+                        .font(.system(size: 12))
                         .foregroundColor(.white.opacity(0.85))
                     Text("Drag corners to resize · drag inside to move")
                         .font(.system(size: 11))
@@ -261,7 +261,7 @@ struct CropImageView: View {
                     p.addLine(to: CGPoint(x: cx, y: cy - len))
                 }
                 ctx.stroke(p,
-                           with: .color(Color(hex: "C9A84C")),
+                           with: .color(Color.appAccent),
                            style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             }
             .frame(width: handleHitSize, height: handleHitSize)

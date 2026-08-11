@@ -14,16 +14,19 @@ struct ColorSelectionView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FCFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 28) {
 
                     // Photo
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
+                    Color.clear
                         .frame(height: 220)
+                        .overlay(
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                        )
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .shadow(color: Color.black.opacity(0.08), radius: 16, x: 0, y: 6)
                         .padding(.horizontal, 24)
@@ -36,33 +39,33 @@ struct ColorSelectionView: View {
                         HStack(spacing: 7) {
                             Image(systemName: "eyedropper")
                                 .font(.system(size: 13, weight: .light))
-                                .foregroundColor(Color(hex: "C9A84C"))
+                                .foregroundColor(Color.appAccent)
                             Text("Color Palette")
-                                .font(.custom("CormorantGaramond-Bold", size: 20))
-                                .foregroundColor(Color(hex: "2C2925"))
+                                .font(.system(size: 17, weight: .bold))
+                                .foregroundColor(Color.textPrimary)
                         }
 
                         if viewModel.isLoading {
                             HStack(spacing: 12) {
-                                ProgressView().tint(Color(hex: "C9A84C"))
+                                ProgressView().tint(Color.appAccent)
                                 Text("Extracting colors...")
-                                    .font(.custom("CormorantGaramond-Italic", size: 15))
-                                    .foregroundColor(Color(hex: "8E8A83"))
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Color.textSecondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.vertical, 12)
                         } else if let error = viewModel.errorMessage {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(error)
-                                    .font(.custom("CormorantGaramond-Italic", size: 14))
-                                    .foregroundColor(Color(hex: "8E8A83"))
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Color.textSecondary)
                                 Button {
                                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                     viewModel.extractColors(from: image)
                                 } label: {
                                     Text("Try Again")
-                                        .font(.custom("CormorantGaramond-SemiBold", size: 15))
-                                        .foregroundColor(Color(hex: "C9A84C"))
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundColor(Color.appAccent)
                                 }
                             }
                         } else {
@@ -76,8 +79,8 @@ struct ColorSelectionView: View {
                                             .shadow(color: color.swiftUIColor.opacity(0.3), radius: 5, x: 0, y: 2)
                                             .overlay(Circle().stroke(Color.white, lineWidth: 2))
                                         Text(color.name)
-                                            .font(.custom("CormorantGaramond-SemiBold", size: 13))
-                                            .foregroundColor(Color(hex: "8E8A83"))
+                                            .font(.system(size: 11, weight: .semibold))
+                                            .foregroundColor(Color.textSecondary)
                                             .lineLimit(2)
                                             .multilineTextAlignment(.center)
                                             .minimumScaleFactor(0.8)
@@ -106,10 +109,10 @@ struct ColorSelectionView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "oval.portrait")
                                 .font(.system(size: 12, weight: .light))
-                                .foregroundColor(Color(hex: "C9A84C"))
+                                .foregroundColor(Color.appAccent)
                             Text("Nail Shape")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 15))
-                                .foregroundColor(Color(hex: "2C2925"))
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(Color.textPrimary)
                         }
                         HStack(spacing: 10) {
                             ForEach(NailShapeType.allCases, id: \.self) { shape in
@@ -121,19 +124,19 @@ struct ColorSelectionView: View {
                                 } label: {
                                     VStack(spacing: 6) {
                                         NailShape(shapeType: shape)
-                                            .fill(selectedShape == shape ? Color(hex: "C9A84C") : Color(hex: "D1D1D6"))
+                                            .fill(selectedShape == shape ? Color.appAccent : Color.divider)
                                             .frame(width: 26, height: 40)
                                         Text(shape.displayName)
                                             .font(.system(size: 10, weight: .medium))
-                                            .foregroundColor(selectedShape == shape ? Color(hex: "C9A84C") : Color(hex: "8E8E93"))
+                                            .foregroundColor(selectedShape == shape ? Color.appAccent : Color.textSecondary)
                                     }
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 10)
-                                    .background(selectedShape == shape ? Color(hex: "C9A84C").opacity(0.08) : Color.white)
+                                    .background(selectedShape == shape ? Color.appAccent.opacity(0.08) : Color.white)
                                     .clipShape(RoundedRectangle(cornerRadius: 12))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12)
-                                            .stroke(selectedShape == shape ? Color(hex: "C9A84C").opacity(0.5) : Color(hex: "E5E5EA"), lineWidth: 1.5)
+                                            .stroke(selectedShape == shape ? Color.appAccent.opacity(0.5) : Color.divider, lineWidth: 1.5)
                                     )
                                 }
                             }
@@ -150,12 +153,12 @@ struct ColorSelectionView: View {
                             Image(systemName: "wand.and.sparkles")
                                 .font(.system(size: 15, weight: .light))
                             Text(viewModel.isLoading ? "Analyzing Photo..." : "Generate Design")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                .font(.system(size: 15, weight: .semibold))
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 58)
-                        .background(viewModel.canGenerate ? Color(hex: "2C2925") : Color(hex: "2C2925").opacity(0.4))
+                        .background(viewModel.canGenerate ? Color.textPrimary : Color.textPrimary.opacity(0.4))
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
                     .disabled(!viewModel.canGenerate)
@@ -164,7 +167,7 @@ struct ColorSelectionView: View {
                 }
                 .background(
                     LinearGradient(
-                        colors: [Color(hex: "FCFAF8").opacity(0), Color(hex: "FCFAF8")],
+                        colors: [Color.appBackground.opacity(0), Color.appBackground],
                         startPoint: .top, endPoint: .bottom
                     )
                     .frame(height: 200).ignoresSafeArea()
@@ -219,13 +222,13 @@ struct NailIntentSheet: View {
         VStack(spacing: 16) {
             // Handle
             Capsule()
-                .fill(Color(hex: "D1D1D6"))
+                .fill(Color.divider)
                 .frame(width: 36, height: 4)
                 .padding(.top, 12)
 
             Text("How are you getting your nails done?")
                 .font(.custom("CormorantGaramond-SemiBold", size: 22))
-                .foregroundColor(Color(hex: "2C2925"))
+                .foregroundColor(Color.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24)
                 .padding(.top, 4)
@@ -238,21 +241,21 @@ struct NailIntentSheet: View {
                             .font(.system(size: 28))
                         VStack(alignment: .leading, spacing: 3) {
                             Text("Doing it myself")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
-                                .foregroundColor(Color(hex: "2C2925"))
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(Color.textPrimary)
                             Text("Shop matching polishes on Amazon")
-                                .font(.custom("CormorantGaramond-Italic", size: 15))
-                                .foregroundColor(Color(hex: "8E8A83"))
+                                .font(.system(size: 12))
+                                .foregroundColor(Color.textSecondary)
                         }
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(Color(hex: "C9A84C"))
+                            .foregroundColor(Color.appAccent)
                     }
                     .padding(16)
-                    .background(Color(hex: "F9F7F4"))
+                    .background(Color.appBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color(hex: "E8E4DF"), lineWidth: 1))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.divider, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
 
@@ -263,21 +266,21 @@ struct NailIntentSheet: View {
                             .font(.system(size: 28))
                         VStack(alignment: .leading, spacing: 3) {
                             Text("Going to a professional")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
-                                .foregroundColor(Color(hex: "2C2925"))
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(Color.textPrimary)
                             Text("Generate AI nail art to show your tech")
-                                .font(.custom("CormorantGaramond-Italic", size: 15))
-                                .foregroundColor(Color(hex: "8E8A83"))
+                                .font(.system(size: 12))
+                                .foregroundColor(Color.textSecondary)
                         }
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(Color(hex: "C9A84C"))
+                            .foregroundColor(Color.appAccent)
                     }
                     .padding(16)
-                    .background(Color(hex: "F9F7F4"))
+                    .background(Color.appBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color(hex: "E8E4DF"), lineWidth: 1))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.divider, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
             }
@@ -285,6 +288,6 @@ struct NailIntentSheet: View {
 
             Spacer()
         }
-        .background(Color(hex: "FCFAF8"))
+        .background(Color.appBackground)
     }
 }

@@ -27,6 +27,14 @@ extension UIColor {
 }
 
 extension Color {
+    static let appBackground = Color(hex: "FCFAF8")
+    static let appAccent     = Color(hex: "C9A84C")
+    static let accentSoft    = Color(hex: "F5F0E8")
+    static let textPrimary   = Color(hex: "2C2925")
+    static let textSecondary = Color(hex: "8E8A83")
+    static let textBody      = Color(hex: "6B6760")
+    static let divider       = Color(hex: "E8E4DF")
+
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0

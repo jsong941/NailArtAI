@@ -7,7 +7,7 @@ struct HistoryView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FAFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             if sessions.isEmpty {
                 EmptyHistoryView()
@@ -28,8 +28,8 @@ struct HistoryView: View {
                     }
 
                     Text("History is kept for 7 days, then automatically removed.")
-                        .font(.custom("CormorantGaramond-Italic", size: 13))
-                        .foregroundColor(Color(hex: "8E8E93"))
+                        .font(.system(size: 11))
+                        .foregroundColor(Color.textSecondary)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
@@ -70,11 +70,11 @@ struct HistorySessionRow: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(session.createdAt, format: .dateTime.month(.wide).day().year())
-                    .font(.custom("CormorantGaramond-SemiBold", size: 16))
-                    .foregroundColor(Color(hex: "1C1C1E"))
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(Color.textPrimary)
                 Text("\(session.colors.count) colors extracted · \(session.createdAt, format: .dateTime.hour().minute())")
-                    .font(.custom("CormorantGaramond-Italic", size: 13))
-                    .foregroundColor(Color(hex: "8E8E93"))
+                    .font(.system(size: 11))
+                    .foregroundColor(Color.textSecondary)
             }
 
             Spacer()
@@ -93,21 +93,21 @@ struct EmptyHistoryView: View {
         VStack(spacing: 16) {
             Image(systemName: "clock.arrow.circlepath")
                 .font(.system(size: 44, weight: .light))
-                .foregroundColor(Color(hex: "C9A84C").opacity(0.5))
+                .foregroundColor(Color.appAccent.opacity(0.5))
 
             Text("No History Yet")
                 .font(.custom("CormorantGaramond-Bold", size: 24))
-                .foregroundColor(Color(hex: "1C1C1E"))
+                .foregroundColor(Color.textPrimary)
 
             Text("Your past design sessions will\nappear here automatically.")
-                .font(.custom("CormorantGaramond-Italic", size: 16))
-                .foregroundColor(Color(hex: "8E8E93"))
+                .font(.system(size: 13))
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
 
             Text("Sessions are kept for 7 days.")
-                .font(.custom("CormorantGaramond-Italic", size: 13))
-                .foregroundColor(Color(hex: "8E8E93").opacity(0.7))
+                .font(.system(size: 11))
+                .foregroundColor(Color.textSecondary.opacity(0.7))
                 .multilineTextAlignment(.center)
         }
     }

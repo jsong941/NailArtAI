@@ -3,9 +3,8 @@ import Foundation
 
 struct GeminiService {
 
-    private let apiKey = Secrets.geminiAPIKey
     private let model = "gemini-2.5-flash"
-    private let baseURL = "https://generativelanguage.googleapis.com/v1beta/models"
+    private let baseURL = "\(Secrets.proxyBaseURL)/v1beta/models"
 
     // MARK: - Step 1: Extract dominant colors from image
     func extractColors(_ image: UIImage) async throws -> [NailColor] {
@@ -119,7 +118,7 @@ struct GeminiService {
         let emphasisNote = emphasizedColors.isEmpty ? "" : " Especially emphasize: \(emphasizedColors.map { $0.name }.joined(separator: ", "))."
         let shapeNote = "The nails should have a \(shape.displayName.lowercased()) shape."
         let descriptionPrompt: String
-        let fingerRule = "Show exactly 5 fingers, no more. Close-up shot of one hand only."
+        let fingerRule = "COMPOSITION: One single elegant hand, photographed palm-down from above in a close-up crop, fingers gently relaxed and slightly spread. Exactly five fingertips are visible — one thumb on the side and four fingers — each finger ending in a single manicured nail. The hand is anatomically correct with natural proportions."
         let styleAnchor = "The overall aesthetic should reflect Korean nail salon style: clean precise execution, soft editorial lighting, minimal negative space, glass-like finish, and a refined polished look — as if photographed for a high-end Korean beauty editorial."
         if let addOnNote {
             // When an add-on is selected, make it the PRIMARY focus of the prompt
@@ -151,18 +150,34 @@ struct GeminiService {
         let imageGenPrompt = try extractText(from: descData)
         print("[PhotoInspired] Generated prompt: \(imageGenPrompt)")
 
-        // Step B: send that prompt to the image generation model
+        let constrainedPrompt = imageGenPrompt + " The photo shows exactly one hand, palm-down, with five fingertips visible: one thumb and four fingers, each with a single nail. Close-up crop, relaxed natural pose, anatomically correct proportions."
+
+        // Step B: generate, verify anatomy, retry on bad hands
+        var lastImage: UIImage?
+        for attempt in 1...3 {
+            let generated = try await generateImage(prompt: constrainedPrompt)
+            lastImage = generated
+            if await verifyHandAnatomy(generated) {
+                return generated
+            }
+            print("[PhotoInspired] Anatomy check failed on attempt \(attempt), retrying")
+        }
+        guard let image = lastImage else { throw GeminiError.parseError }
+        return image
+    }
+
+    private func generateImage(prompt: String) async throws -> UIImage {
         let imageGenModel = "gemini-2.5-flash-image"
         let imageGenBody: [String: Any] = [
             "contents": [[
-                "parts": [["text": imageGenPrompt]]
+                "parts": [["text": prompt]]
             ]],
             "generationConfig": [
                 "responseModalities": ["IMAGE", "TEXT"]
             ]
         ]
 
-        let url = URL(string: "\(baseURL)/\(imageGenModel):generateContent?key=\(apiKey)")!
+        let url = URL(string: "\(baseURL)/\(imageGenModel):generateContent")!
         var request = URLRequest(url: url, timeoutInterval: 120)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -200,6 +215,48 @@ struct GeminiService {
 
         print("[PhotoInspired] No image part found in response: \(String(data: data, encoding: .utf8) ?? "n/a")")
         throw GeminiError.parseError
+    }
+
+    // Fails open: if the check itself errors, accept the image rather than burn retries
+    private func verifyHandAnatomy(_ image: UIImage) async -> Bool {
+        let resized = image.resizedForAPI(maxDimension: 512)
+        guard let imageData = resized.jpegData(compressionQuality: 0.7) else { return true }
+        let base64Image = imageData.base64EncodedString()
+
+        let prompt = """
+        Look at this nail art photo and count carefully.
+        Return ONLY valid JSON (no markdown, no code blocks) in exactly this format:
+        {"hands": 1, "fingers": 5, "thumbs": 1, "anatomyOk": true}
+
+        - "hands": number of hands visible
+        - "fingers": total fingertips visible (including thumbs)
+        - "thumbs": number of thumbs visible
+        - "anatomyOk": true only if every hand looks anatomically correct (no extra, missing, merged, or deformed fingers)
+        """
+
+        let body: [String: Any] = [
+            "contents": [[
+                "parts": [
+                    ["inline_data": ["mime_type": "image/jpeg", "data": base64Image]],
+                    ["text": prompt]
+                ]
+            ]]
+        ]
+
+        guard let data = try? await makeRequest(body: body),
+              let text = try? extractText(from: data),
+              let json = try? parseJSON(text),
+              let hands = json["hands"] as? Int,
+              let fingers = json["fingers"] as? Int,
+              let thumbs = json["thumbs"] as? Int,
+              let anatomyOk = json["anatomyOk"] as? Bool else {
+            print("[PhotoInspired] Anatomy check unparseable, accepting image")
+            return true
+        }
+
+        let ok = hands == 1 && fingers <= 5 && thumbs <= 1 && anatomyOk
+        print("[PhotoInspired] Anatomy check — hands: \(hands), fingers: \(fingers), thumbs: \(thumbs), ok: \(anatomyOk) → \(ok ? "pass" : "fail")")
+        return ok
     }
 
     // MARK: - Step 4: Regenerate a single design (for refinement flow)
@@ -250,7 +307,7 @@ struct GeminiService {
 
     // MARK: - Shared Helpers
     private func makeRequest(body: [String: Any]) async throws -> Data {
-        let url = URL(string: "\(baseURL)/\(model):generateContent?key=\(apiKey)")!
+        let url = URL(string: "\(baseURL)/\(model):generateContent")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -262,6 +319,9 @@ struct GeminiService {
         if http.statusCode != 200 {
             let body = String(data: data, encoding: .utf8) ?? "no body"
             print("Gemini API error \(http.statusCode): \(body)")
+            if http.statusCode == 429 || http.statusCode == 503 {
+                throw GeminiError.serverBusy
+            }
             throw GeminiError.apiError
         }
         return data

@@ -51,7 +51,7 @@ struct HelpView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "FCFAF8").ignoresSafeArea()
+                Color.appBackground.ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -59,21 +59,21 @@ struct HelpView: View {
                         VStack(spacing: 8) {
                             ZStack {
                                 Circle()
-                                    .fill(Color(hex: "C9A84C").opacity(0.1))
+                                    .fill(Color.appAccent.opacity(0.1))
                                     .frame(width: 70, height: 70)
                                 Image(systemName: "questionmark")
                                     .font(.system(size: 28, weight: .light))
-                                    .foregroundColor(Color(hex: "C9A84C"))
+                                    .foregroundColor(Color.appAccent)
                             }
                             .padding(.top, 12)
 
                             Text("How It Works")
                                 .font(.custom("CormorantGaramond-Bold", size: 34))
-                                .foregroundColor(Color(hex: "2C2925"))
+                                .foregroundColor(Color.textPrimary)
 
                             Text("Follow these steps to get your perfect nail look.")
-                                .font(.custom("CormorantGaramond-Italic", size: 18))
-                                .foregroundColor(Color(hex: "8E8A83"))
+                                .font(.system(size: 15))
+                                .foregroundColor(Color.textSecondary)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 32)
                         }
@@ -92,10 +92,10 @@ struct HelpView: View {
                             HStack(spacing: 8) {
                                 Image(systemName: "lightbulb")
                                     .font(.system(size: 13, weight: .light))
-                                    .foregroundColor(Color(hex: "C9A84C"))
+                                    .foregroundColor(Color.appAccent)
                                 Text("Tips for Best Results")
                                     .font(.custom("CormorantGaramond-Bold", size: 22))
-                                    .foregroundColor(Color(hex: "2C2925"))
+                                    .foregroundColor(Color.textPrimary)
                             }
                             VStack(alignment: .leading, spacing: 8) {
                                 TipRow(text: "Use well-lit, clear photos for more accurate color extraction")
@@ -120,8 +120,8 @@ struct HelpView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .font(.custom("CormorantGaramond-SemiBold", size: 16))
-                        .foregroundColor(Color(hex: "C9A84C"))
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(Color.appAccent)
                 }
             }
         }
@@ -150,15 +150,15 @@ struct HelpStepRow: View {
             VStack(spacing: 0) {
                 ZStack {
                     Circle()
-                        .fill(Color(hex: "C9A84C").opacity(0.12))
+                        .fill(Color.appAccent.opacity(0.12))
                         .frame(width: 36, height: 36)
                     Text("\(step.number)")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 16))
-                        .foregroundColor(Color(hex: "C9A84C"))
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(Color.appAccent)
                 }
                 if !isLast {
                     Rectangle()
-                        .fill(Color(hex: "E8E4DF"))
+                        .fill(Color.divider)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
                         .padding(.vertical, 4)
@@ -175,23 +175,23 @@ struct HelpStepRow: View {
                     HStack(spacing: 10) {
                         Image(systemName: step.icon)
                             .font(.system(size: 14, weight: .light))
-                            .foregroundColor(Color(hex: "8E8A83"))
+                            .foregroundColor(Color.textSecondary)
                             .frame(width: 18)
                         Text(step.title)
-                            .font(.custom("CormorantGaramond-SemiBold", size: 20))
-                            .foregroundColor(Color(hex: "2C2925"))
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundColor(Color.textPrimary)
                         Spacer()
                         Image(systemName: expanded ? "chevron.up" : "chevron.down")
                             .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(Color(hex: "C9A84C"))
+                            .foregroundColor(Color.appAccent)
                     }
                 }
                 .buttonStyle(.plain)
 
                 if expanded {
                     Text(step.detail)
-                        .font(.custom("CormorantGaramond-Italic", size: 17))
-                        .foregroundColor(Color(hex: "6B6760"))
+                        .font(.system(size: 14))
+                        .foregroundColor(Color.textBody)
                         .lineSpacing(4)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 2)
@@ -211,12 +211,12 @@ struct TipRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Circle()
-                .fill(Color(hex: "C9A84C"))
+                .fill(Color.appAccent)
                 .frame(width: 5, height: 5)
                 .padding(.top, 7)
             Text(text)
-                .font(.custom("CormorantGaramond-Regular", size: 16))
-                .foregroundColor(Color(hex: "6B6760"))
+                .font(.system(size: 13))
+                .foregroundColor(Color.textBody)
                 .lineSpacing(3)
                 .fixedSize(horizontal: false, vertical: true)
         }

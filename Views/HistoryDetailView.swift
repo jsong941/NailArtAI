@@ -7,7 +7,7 @@ struct HistoryDetailView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "FAFAF8").ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 20) {
@@ -22,8 +22,8 @@ struct HistoryDetailView: View {
                                     .shadow(color: color.swiftUIColor.opacity(0.35), radius: 6, x: 0, y: 3)
                                     .overlay(Circle().stroke(Color.white, lineWidth: 2))
                                 Text(color.name)
-                                    .font(.custom("CormorantGaramond-Regular", size: 11))
-                                    .foregroundColor(Color(hex: "8E8E93"))
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Color.textSecondary)
                                     .lineLimit(1)
                             }
                         }
