@@ -1,0 +1,11 @@
+name = "nailart-gemini-proxy"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# 20 requests per minute per IP — covers the worst case of one generation
+# (1 describe + 3 image gens + 3 anatomy checks) with headroom
+[[unsafe.bindings]]
+name = "RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
