@@ -35,3 +35,6 @@ Secrets.swift
 # Claude Code local config
 .claude/
 .mcp.json
+
+# Wrangler local cache
+.wrangler/
